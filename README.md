@@ -1,8 +1,9 @@
 # Used Auction Platform Security Lab
 
-This repository documents a practical security analysis project focused on
-reviving a legacy Java web application and evaluating its security risks
-through attack and defense scenarios.
+This repository documents the security analysis of a legacy Java web application,
+including environment setup issues, attack scenarios, defensive hardening,
+and retrospective lessons learned.
+
 
 ## Purpose
 
