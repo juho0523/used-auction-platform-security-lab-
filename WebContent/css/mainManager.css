@@ -1,0 +1,195 @@
+img{
+	width:31px;
+	height:31px;
+}
+
+
+p{
+	font-size:10px;
+}
+
+.nicknameP{
+
+	transform: translateY(40%);
+}
+
+.rateP{
+	transform: translateY(-20%);
+}
+
+
+#stateSpan{
+	background-color:#FFB966;
+}
+
+.table-borderless{
+	display:grid;
+	grid-template-columns:60px 100px 70px 70px;
+	grid-template-rows:20px 20px 20px;
+}
+
+
+.usersInfo{
+	grid-area:1/3/4/5;
+	
+	
+	
+	/* js에서 테이블 클릭시 나오게 해줄 거임ㅇㅇ */ 
+	/* border:none; */
+}
+
+
+.lineUp{
+	grid-area:1/1/4/3;
+	
+	
+	
+	
+	/* js에서 테이블 클릭시 나오게 해줄 거임ㅇㅇ */ 
+	/* border:none; */
+}
+
+.col-md-3{
+	grid-area:1/1/4/2;
+	display:flex;
+	align-self: center;
+	transform: translateY(12%);
+	
+	
+	
+ 	/* js에서 테이블 클릭시 나오게 해줄 거임ㅇㅇ */ 
+	/* border:none; */
+	
+}
+
+.userIdP{
+	grid-area:1/3/2/5;
+	display:flex;
+	justify-content: flex-end;
+}
+
+.phoneNumberP{
+	grid-area:2/3/3/5;
+	display:flex;
+	justify-content: flex-end;
+}
+
+
+.container-fulid{
+  height:450px;	
+  overflow-y: scroll;
+  scrollbar-width: none;
+}
+
+.sameP{
+	grid-area:3/3/4/5;
+	display:flex;
+	justify-content:space-between;
+	flex-direction: row-reverse;
+}
+
+.rateP{
+	grid-area:3/4/4/5;
+}
+
+.reportCountP{
+	grid-area:3/3/4/4;
+	transform: translateX(100%);
+	color:#FF0000;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#rptrpt{
+  height:170px;	
+  overflow-y: scroll;
+  scrollbar-width: none;	
+}
+.reportedList{
+	
+	display:grid;
+	grid-template-columns:100px 140px 60px;
+	grid-template-rows: 110px 60px;
+
+}
+
+.titleH6{
+	font-size:8px;
+	
+	white-space: wrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+.categoryP{
+	font-size:5px;
+}
+.startPriceP{
+	font-size:6px;
+	
+		white-space: wrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+.priceP{
+	font-size:6px;
+	
+	
+		white-space: wrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+.addressP{
+	font-size:6px;
+}
+.endTimeP{
+	font-size:6px;
+}
+.bidCountP{
+	font-size:8px;
+	transform:translateY(50%);
+	
+	
+	white-space: wrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+#productImg{
+	width:90px;
+	height:90px;
+}
+.reportReason{
+	
+	width:300px;
+	height:50px;
+	
+	white-space: wrap;
+
+	text-overflow: ellipsis;
+}
+#rta0{
+	border:none;
+}
+#rta1{
+	border:none;
+}
+#rta2{
+	border:none;
+}
+
+#rta3{
+	grid-area:2/1/3/4;
+  height:60px;	
+  overflow-y: scroll;
+  scrollbar-width: none;
+}

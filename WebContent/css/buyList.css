@@ -1,0 +1,110 @@
+@CHARSET "UTF-8";
+
+#previous {
+  width: 23px;
+  height: 23px;
+}
+
+#top{
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: inherit;
+	height: 40px;
+}
+#top h1{
+	margin-left: 5px;
+	font-size: 20px;
+	font-weight: 600;
+}
+#top img{
+	width: 23px;
+	height: 23px;
+	cursor: pointer;
+}
+
+#top-head {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.container {
+  height: 528px;
+}
+
+.d-flex > img {
+  width: 70px;
+  height: 70px;
+}
+
+.d-flex > .badge {
+  height: 100%;
+}
+
+.card-text > h6 {
+  margin: 0px;
+}
+
+.badge-s {
+  background-color: #FFB966;
+}
+
+.badge-t {
+  background-color: #E07F39;
+}
+
+.badge-e {
+  background-color: #AAAAAA;
+}
+
+.button {
+  float: right;
+  margin-bottom: 5px;
+}
+
+.button > button {
+  font-size: 10px;
+  padding: 1px 10px;
+}
+
+.button > #selling {
+  background-color: #E07F39;
+  border-color: #E07F39;
+}
+
+.button > #sellComplete {
+  background-color: #FFB966;
+  border-color: #FFB966;
+}
+
+#item-title-group > h6,
+#item-title-group > p {
+  margin: 0px;
+}
+
+#item-title-group > p {
+  font-size: 9px;
+  color: #AAAAAA;
+}
+
+#item-title-group > span {
+  font-size: 9px;
+}
+
+#buyComplete {
+  background-color: #FFB966;
+  border-color: #FFB966;
+  font-size: 10px;
+  padding: 0px;
+  width: 100%;
+}
+
+#buyEnd {
+  background-color: #AAAAAA;
+  border-color: #AAAAAA;
+  font-size: 10px;
+  padding: 0px;
+  width: 100%;
+}
+
+

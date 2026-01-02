@@ -1,0 +1,88 @@
+img{
+	width:31px;
+	height:31px;
+}
+
+
+
+
+
+
+
+.reportedList{
+	display:grid;
+	grid-template-columns:100px 200px 50px 50px;
+	grid-template-rows:20px 20px 20px;
+}
+
+
+.table-borderless{
+	display:grid;
+	grid-template-columns:60px 100px 70px 70px;
+	grid-template-rows:20px 20px 20px;
+}
+
+
+.usersChat{
+	grid-area:1/2/4/5;
+	dispaly:flex;
+	align-content: space-between;
+}
+
+
+.lineUp{
+	grid-area:1/1/4/3;
+	
+}
+#isRead{
+	width:13px;
+	height:13px;
+	position:absolute;
+	transform:translateX(170%);
+}
+.col-md-3{
+	grid-area:1/1/4/2;
+	display:flex;
+	align-self: center;
+	transform: translateY(12%);
+}
+
+.nicknameP{
+	grid-area:1/2/3/5;
+	display:flex;
+	justify-content: flex-start;
+	transform: translateY(20%);
+	font-weight:bold;
+	font-size:15px;
+	
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.chatP{
+	grid-area:2/2/4/5;
+	display:flex;
+	justify-content: flex-start;
+	transform: translateY(5%);
+	font-size:10px;
+	color:#5C5C5C;
+	
+	
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+
+
+
+.container-fulid{
+  height:478px;	
+  overflow-y: scroll;
+  scrollbar-width: none;
+}
+
+
+
+

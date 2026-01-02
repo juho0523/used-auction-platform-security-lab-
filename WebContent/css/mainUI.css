@@ -1,0 +1,96 @@
+@CHARSET "UTF-8";
+
+.img-fluid {
+	width: 88px;
+	height: 88px;
+}
+
+.card-text>h6 {
+	margin: 0px;
+	width: 155px;
+	font-weight: 600;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.badge-s {
+	background-color: #FF922E;
+}
+
+.card-text>.badge-t {
+	background-color: #E07F39;
+}
+
+.card-text>.badge-e {
+	background-color: #AAAAAA;
+}
+
+.product-info {
+	margin: 0px;
+	font-size: 11px;
+}
+
+.dropdown-menu {
+	height: 120px;
+	overflow-y: scroll;
+	scrollbar-width: none;
+}
+
+.input-field {
+	border: none;
+	outline: none;
+	border-bottom: 1px solid #AAAAAA;;
+}
+
+.text-group {
+	display: inline-flex;
+}
+
+.text-group-point>p {
+	font-size: 10px;
+}
+
+.card-text>h6 {
+	margin: 0px;
+}
+
+.card-text>.badge-s {
+	background-color: #FF922E;
+}
+
+.card-text>.badge-t {
+	background-color: #1CADFF;
+}
+
+.card-text>.badge-e {
+	background-color: #AAAAAA;
+}
+
+.product-info {
+	margin: 0px;
+	font-size: 9px;
+	color: gray;
+}
+
+.active {
+	background-color: #FF922E;
+}
+
+#regionBtn {
+	width: 71px;
+	text-align: right;
+}
+
+#noti {
+	position: relative;
+}
+
+.alarm {
+	position : absolute;
+	right : 4px;
+	width: 6px;
+	height: 6px;
+	border-radius: 50%;
+	background-color: red;
+}

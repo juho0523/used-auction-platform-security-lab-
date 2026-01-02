@@ -1,0 +1,136 @@
+@CHARSET "UTF-8";
+
+#previous {
+  width: 23px;
+  height: 23px;
+}
+
+#top{
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	width: inherit;
+	height: 40px;
+}
+#top h1{
+	margin-left: 5px;
+	font-size: 20px;
+	font-weight: 600;
+}
+#top img{
+	width: 23px;
+	height: 23px;
+	cursor: pointer;
+}
+
+#top-head {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.container {
+  height: 528px;
+}
+
+.d-flex > img {
+  width: 90px;
+  height: 90px;
+}
+
+.d-flex > .badge {
+  height: 100%;
+}
+
+.d-flex > p {
+  margin: 0px;
+}
+
+.card-text > h6 {
+  margin: 0px;
+}
+
+.badge-s {
+  background-color: #FFB966;
+}
+
+.badge-t {
+  background-color: #E07F39;
+}
+
+.badge-e {
+  background-color: #AAAAAA;
+}
+
+#item-title-group > h6,
+#item-title-group > p {
+  margin: 0px;
+}
+
+#item-title-group > p {
+  font-size: 12px;
+  margin: 0px;
+}
+
+#item-title-group > span {
+  font-size: 9px;
+}
+
+.product-info {
+  margin: 0px;
+  font-size: 11px;
+}
+
+.text-group {
+  display: inline-flex;
+}
+
+.text-group > p {
+  margin-right: 5px;
+}
+
+.list-group {
+  display: flex;
+  flex-direction: column-reverse;
+  overflow-y: scroll;
+  scrollbar-width: none;
+  height: 358px;
+}
+
+.chatbox {
+  font-size: 12px;
+  max-width: 80%;
+  border-radius: 5px;
+  padding: 5px;
+  margin-bottom: 5px;
+}
+
+.you {
+  background-color: #FFB966;
+  align-self: flex-start;
+}
+
+.me {
+  background-color: #ffeedb;
+  align-self: flex-end;
+}
+
+.chat-input {
+  margin-bottom: 15px;
+  background: #EEEEEE;
+  padding: 0px 5px 0px 2px;
+}
+
+.chat-input > input {
+  background: #EEEEEE;
+  width: 250px;
+  border: 0px;
+}
+
+.chat-input > button {
+  background: #EEEEEE;
+}
+
+.chat-input > a >img {
+  width: 30px;
+  height: 30px;
+}

@@ -1,0 +1,330 @@
+hr{
+	margin: 5px;
+}
+#top{
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	width: inherit;
+	height: 40px;
+	margin-top: 10px;
+}
+#top h1{
+	margin-left: 5px;
+	font-size: 20px;
+	font-weight: 600;
+}
+#top img{
+	width: 23px;
+	height: 23px;
+	cursor: pointer;
+	margin-left: 10px;
+}
+
+#option{
+	margin-right: 10px;
+	cursor: pointer;
+}
+
+#container{
+	width: 90%;
+	height: 478px;
+	font-size: 14px;
+	overflow-y: scroll;
+}
+
+#container::-webkit-scrollbar {
+  display: none;
+}
+
+#image{
+	display: flex;
+	justify-content: center;
+	width: 100%;
+	height: 200px;
+	margin-top: 30px;
+}
+
+#image img{
+	width: 190px;
+	height: 190px;
+}
+
+#carousel_slider{
+	display: flex;
+	justify-content: center;
+	width: 100%;
+	hegiht: 11px;
+}
+
+#nickname{
+	display: flex;
+	align-items: center;
+	width: 100%;
+}
+
+#nickname_img_container{
+	display: flex;
+	justify-content: center;
+	width: 31px;
+	height: 31px;
+	background-color: #FFB966;
+	border-radius: 50px;
+}
+
+#nickname img{
+	width: 26px;
+	height: 29px;
+}
+
+#nickname_container{
+	display: flex;
+	align-items: center;
+	height: 45px;
+}
+
+#nickname p{
+	font-size: 16px;
+	margin-left: 10px;
+	margin-top: 0px;
+	margin-bottom: 0px;
+}
+
+#title_container{
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	width: 100%;
+}
+
+#title{
+	width: 100%;
+}
+
+#category{
+	font-size: 8px;
+	color: gray;
+}
+
+#price{
+	display: flex;
+	flex-wrap: wrap;
+	width: 100%;
+}
+
+#price :first-child{
+	font-size: 32px;
+	font-weight: 600;
+	color: red;
+	width: 100%;
+}
+
+#product_state{
+	display: flex;
+	flex-wrap: wrap;
+	width: 100%;
+	font-size: 12px;
+	color: gray;
+}
+
+#product_state :first-child{
+	width: 100%;
+}
+
+#button{
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center !important;
+	width: 100%;
+	gap: 14px;
+}
+
+#button div{
+	width: 240px;
+	height: 50px;
+	border-radius: 5px;
+	text-align: center;
+	cursor: pointer;
+}
+
+#button :first-child{
+	background-color: #FFB966;
+	font-size: 30px;
+	color: white;
+	border: none;
+}
+
+#button :nth-child(2){
+	width: 236px;
+	height: 46px;
+	font-size: 30px;
+	color: #FFB966;
+	background-color: white;
+	border: 2px solid #FFB966;
+}
+
+.modal_default{
+	display: none;
+	justify-content: center;
+	width: 270px;
+	height: 150px;
+	background-color: #FFB966;
+	border-radius: 5px;
+	border: none;
+}
+
+#bid_modal_container{
+	display: flex;
+	width: 90%;
+	flex-wrap: wrap;
+	justify-content: center;
+}
+
+#buy_modal_container{
+	display: flex;
+	width: 90%;
+	flex-wrap: wrap;
+	justify-content: center;
+}
+
+#bid_modal_top{
+	width: 100%;
+	text-align: center;
+	margin-top: 10px;
+	font-size: 16px;
+	color: white;
+}
+
+#buy_modal_top{
+	width: 100%;
+	text-align: center;
+	margin-top: 10px;
+	font-size: 16px;
+	color: white;
+}
+
+#bid_modal_input_container{
+	width: 100%;
+	text-align: center;
+}
+
+#bid_modal_input_container input{
+	width: 100%;
+	height: 40px;
+	text-align: right;
+	font-size: 20px;
+}
+
+#bid_modal_button_container{
+	display: flex;
+	justify-content: flex-end;
+	gap: 5px;
+	width: 100%;
+}
+
+#bid_modal_button_container div{
+	width: 70px;
+	height: 30px;
+	background-color: #FFD9AC;
+	display: flex;
+	justify-content : center;
+	align-items : center;
+	border-radius: 5px;
+	font-weight: 600;
+	cursor: pointer;
+}
+
+#buy_modal_input_container{
+	width: 100%;
+	text-align: center;
+}
+
+#buy_modal_input_container :first-child{
+	width: 100%;
+	height: 40px;
+	margin-bottom: 0px;
+	font-size: 20px;
+}
+
+#buy_modal_button_container{
+	display: flex;
+	justify-content: flex-end;
+	gap: 5px;
+	width: 100%;
+}
+
+#buy_modal_button_container div{
+	width: 70px;
+	height: 30px;
+	background-color: #FFD9AC;
+	display: flex;
+	justify-content : center;
+	align-items : center;
+	border-radius: 5px;
+	font-weight: 600;
+	cursor: pointer;
+}
+
+#option_modal{
+	flex-wrap: wrap;
+	align-items: center;
+}
+.option_button{
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 235px;
+	height: 55px;
+	background-color: #FFD9AC;
+	font-size: 20px;
+	border-radius: 5px;
+	font-weight: 400;
+	cursor: pointer;
+}
+
+#report_modal{
+	flex-wrap: wrap;
+	height: 325px;
+}
+
+#report_modal_container{
+	
+}
+
+#report_modal_top{
+	display: flex;
+	justify-content: center;
+	font-size: 24px;
+	color: #F5F5F5;
+}
+
+#report_modal textarea{
+	width: 240px;
+	height: 230px;
+	resize: none;
+}
+
+#report_modal_button_container{
+	display: flex;
+	justify-content: center;
+	gap: 30px;
+	width: 100%;
+	margin-top: 10px;
+}
+
+#report_modal_button_container div{
+	width: 70px;
+	height: 30px;
+	background-color: #FFD9AC;
+	display: flex;
+	justify-content : center;
+	align-items : center;
+	border-radius: 5px;
+	font-weight: 600;
+	cursor: pointer;
+}
+
+.carousel-item > img {
+	width: 100%;
+	height: 250px;
+}

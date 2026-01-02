@@ -1,0 +1,78 @@
+img{
+	width:60px;
+	height:60px;
+}
+
+
+.pointTxt{
+	text-align: center;
+	transform: translateX(40%);
+}
+
+.pointFont{
+	font-size:2em;
+}
+
+
+
+.nicknameP{
+	transform: translateY(40%);
+}
+
+.rateP{
+	transform: translateY(-20%);
+}
+
+
+.modal-header{
+	background-color:#FFB966;
+}
+
+.modal-body{
+	background-color:#FFB966;
+}
+
+.modal-title{
+	background-color:#FFB966;
+	color:#FFFFFF;
+}
+
+.modal-footer{
+	background-color:#FFB966;
+}
+
+#modalBtn{
+	background-color:#FFD9AC !important;
+	color:#000000;
+}
+
+
+.btn{
+	background-color:#FFB966;
+	border:none;
+
+}
+
+#myActButton{
+	
+	transform: translateX(40%);
+}
+
+
+
+
+.cBeB{
+	display:flex;
+	flex-wrap:nowrap;
+}
+
+.chargeButton{
+	transform: translateX(-50%);
+
+}
+
+
+.exchangeButton{
+	transform: translateX(40%);
+	
+}
