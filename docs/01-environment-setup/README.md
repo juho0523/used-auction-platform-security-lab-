@@ -40,7 +40,7 @@ The following technologies were identified through source code and configuration
 * **Database**: Oracle Database XE (JNDI JDBC DataSource)
 * **Development Tools**: Eclipse (original), Visual Studio Code (analysis and restoration)
 * **Version Control**: Git / GitHub
-* **Host Operating System**: Windows (local environment)
+* **Host Operating System**: Windows11 (local environment)
 * **Alternative Runtime Consideration**: Docker-based database deployment
 
 The absence of a modern framework (e.g., Spring MVC) is intentional and reflects the original implementation context.
@@ -112,4 +112,5 @@ Based on the constraints identified, the following decisions were made:
 * Preserve the original application structure without modernization
 
 The next phase will validate application connectivity and begin systematic attack scenario design in `02-attack-scenarios`.
+
 
