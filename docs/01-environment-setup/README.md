@@ -28,7 +28,7 @@ Request flow is linear and synchronous: client requests are handled directly by 
 
 ### Logical Architecture Diagram
 
-![Software Architecture](images/스크린샷 2026-01-06 014820.png)
+![Software Architecture](docs/01-environment-setup/images/스크린샷 2026-01-06 014820.png)
 
 ## Technology Stack
 
@@ -112,6 +112,7 @@ Based on the constraints identified, the following decisions were made:
 * Preserve the original application structure without modernization
 
 The next phase will validate application connectivity and begin systematic attack scenario design in `02-attack-scenarios`.
+
 
 
 
