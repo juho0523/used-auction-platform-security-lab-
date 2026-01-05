@@ -104,6 +104,19 @@ All commands, configuration files, and environment assumptions are documented to
 
 ---
 
+## Environment Constraints
+
+The restoration process was performed under the following constraints:
+
+* Only the original project source directory was available
+* No infrastructure-as-code, VM images, or database backups existed
+* Original deployment documentation was unavailable
+* Host system used a non-English (Korean) Windows user environment
+
+These constraints intentionally reflect realistic legacy system conditions and influence both operational and security risk analysis.
+
+---
+
 ## Decision and Next Steps
 
 Based on the constraints identified, the following decisions were made:
@@ -111,7 +124,12 @@ Based on the constraints identified, the following decisions were made:
 * Use a Docker-based Oracle XE instance to restore database functionality
 * Preserve the original application structure without modernization
 
+The decision to adopt a containerized database environment was driven by repeated failures in native Oracle XE installation on the host system. These failures exposed practical operational risks associated with legacy database deployment, including installer fragility, OS-level dependency issues, and poor reproducibility.
+
+Given the increasing industry adoption of container-based workflows and their advantages in isolation, repeatability, and environment parity, Docker was selected as a pragmatic alternative rather than a modernization effort. The goal remains faithful restoration of the original system behavior, while reducing host-specific instability that could hinder controlled security experimentation.
+
 The next phase will validate application connectivity and begin systematic attack scenario design in `02-attack-scenarios`.
+
 
 
 
