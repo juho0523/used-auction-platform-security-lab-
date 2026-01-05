@@ -21,7 +21,7 @@ Rather than rebuilding the system using modern frameworks or cloud-native compon
 The target application follows a traditional three-tier architecture with a monolithic design and CRUD-focused functionality.
 
 * **Client Tier**: Web browser issuing HTTP requests
-* **Application Tier**: Apache Tomcat 8.x executing JSP and Servlet components
+* **Application Tier**: Apache Tomcat 8.0.30 executing JSP and Servlet components
 * **Data Tier**: Oracle Database (XE), accessed via a JNDI-based JDBC DataSource
 
 Request flow is linear and synchronous: client requests are handled directly by JSP/Servlet components, which interact with the database for create, read, update, and delete operations. Business logic and persistence logic are not strictly separated, increasing reliance on correct input handling at the web layer.
@@ -34,9 +34,9 @@ Request flow is linear and synchronous: client requests are handled directly by 
 
 The following technologies were identified through source code and configuration analysis:
 
-* **Programming Language**: Java (JDK 8 recommended for Tomcat 8 compatibility)
+* **Programming Language**: Java 1.8.0
 * **Web Technology**: JSP / Servlet (Eclipse WTP Dynamic Web Project)
-* **Application Server**: Apache Tomcat 8.x
+* **Application Server**: Apache Tomcat 8.0.30
 * **Database**: Oracle Database XE (JNDI JDBC DataSource)
 * **Development Tools**: Eclipse (original), Visual Studio Code (analysis and restoration)
 * **Version Control**: Git / GitHub
@@ -51,7 +51,7 @@ The absence of a modern framework (e.g., Spring MVC) is intentional and reflects
 
 ### Application Server
 
-Apache Tomcat 8.x was selected to match the servlet API level and configuration expected by the project. Manual configuration of context and DataSource settings was required due to missing deployment documentation.
+Apache Tomcat 8.0.30 was selected to match the servlet API level and configuration expected by the project. Manual configuration of context and DataSource settings was required due to missing deployment documentation.
 
 ### Database Setup (Oracle)
 
@@ -112,3 +112,4 @@ Based on the constraints identified, the following decisions were made:
 * Preserve the original application structure without modernization
 
 The next phase will validate application connectivity and begin systematic attack scenario design in `02-attack-scenarios`.
+
