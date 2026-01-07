@@ -16,6 +16,22 @@ Rather than rebuilding the system using modern frameworks or cloud-native compon
 
 ---
 
+## Security Analysis Scope
+
+The restored environment is intentionally treated as a security analysis target rather than a production-ready system.
+
+The scope of analysis includes:
+
+* Input validation weaknesses in JSP/Servlet-based request handling
+* Authentication and authorization boundary flaws
+* Database interaction risks arising from direct JDBC usage
+* Configuration-level vulnerabilities in Tomcat and Oracle XE
+* Operational risks caused by legacy dependency management
+
+Modern security controls (e.g., ORM frameworks, centralized authentication, container hardening) are deliberately excluded to preserve the original threat surface.
+
+---
+
 ## Software Architecture (Logical)
 
 The target application follows a traditional three-tier architecture with a monolithic design and CRUD-focused functionality.
@@ -28,7 +44,7 @@ Request flow is linear and synchronous: client requests are handled directly by 
 
 ### Logical Architecture Diagram
 
-
+![Software Architecture](images/software-architecture.png)
 
 ## Technology Stack
 
@@ -63,8 +79,6 @@ Observed issues included:
 * Dependency on temporary directories within non-ASCII (Korean) Windows user paths
 * Inconsistent behavior despite manual TEMP directory reassignment
 
-Detailed logs and screenshots are archived in `oracle-install-errors.md` and the `screenshots/` directory.
-
 ---
 
 ## Alternative Approaches Considered
@@ -76,8 +90,6 @@ This approach offers:
 * Environment isolation
 * Repeatable setup procedures
 * Reduced dependency on host OS configuration
-
-However, Docker usage introduced additional constraints related to WSL2 availability and host OS update limitations, which are documented separately.
 
 ---
 
@@ -92,15 +104,16 @@ Several security-relevant observations emerge from this environment setup phase:
 
 ---
 
-## Artifacts and Reproducibility
+## Environment Constraints
 
-This directory includes the following supporting materials:
+The restoration process was performed under the following constraints:
 
-* `oracle-install-errors.md`: Installer error messages and analysis
-* `screenshots/`: Error dialogs and setup failure evidence
-* (Planned) `docker/`: Container configuration for database restoration
+* Only the original project source directory was available
+* No infrastructure-as-code, VM images, or database backups existed
+* Original deployment documentation was unavailable
+* Host system used a non-English (Korean) Windows user environment
 
-All commands, configuration files, and environment assumptions are documented to support reproducibility.
+These constraints intentionally reflect realistic legacy system conditions and influence both operational and security risk analysis.
 
 ---
 
@@ -111,6 +124,9 @@ Based on the constraints identified, the following decisions were made:
 * Use a Docker-based Oracle XE instance to restore database functionality
 * Preserve the original application structure without modernization
 
-The next phase will validate application connectivity and begin systematic attack scenario design in `02-attack-scenarios`.
+The decision to adopt a containerized database environment was driven by repeated failures in native Oracle XE installation on the host system. These failures exposed practical operational risks associated with legacy database deployment, including installer fragility, OS-level dependency issues, and poor reproducibility.
 
+Given the increasing industry adoption of container-based workflows and their advantages in isolation, repeatability, and environment parity, Docker was selected as a pragmatic alternative rather than a modernization effort. The goal remains faithful restoration of the original system behavior, while reducing host-specific instability that could hinder controlled security experimentation.
+
+The next phase will validate application connectivity and begin systematic attack scenario design in `02-attack-scenarios`.
 
