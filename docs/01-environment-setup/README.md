@@ -16,6 +16,22 @@ Rather than rebuilding the system using modern frameworks or cloud-native compon
 
 ---
 
+## Security Analysis Scope
+
+The restored environment is intentionally treated as a security analysis target rather than a production-ready system.
+
+The scope of analysis includes:
+
+* Input validation weaknesses in JSP/Servlet-based request handling
+* Authentication and authorization boundary flaws
+* Database interaction risks arising from direct JDBC usage
+* Configuration-level vulnerabilities in Tomcat and Oracle XE
+* Operational risks caused by legacy dependency management
+
+Modern security controls (e.g., ORM frameworks, centralized authentication, container hardening) are deliberately excluded to preserve the original threat surface.
+
+---
+
 ## Software Architecture (Logical)
 
 The target application follows a traditional three-tier architecture with a monolithic design and CRUD-focused functionality.
@@ -88,18 +104,6 @@ Several security-relevant observations emerge from this environment setup phase:
 
 ---
 
-## Artifacts and Reproducibility
-
-This directory includes the following supporting materials:
-
-* `oracle-install-errors.md`: Installer error messages and analysis
-* `screenshots/`: Error dialogs and setup failure evidence
-* (Planned) `docker/`: Container configuration for database restoration
-
-All commands, configuration files, and environment assumptions are documented to support reproducibility.
-
----
-
 ## Environment Constraints
 
 The restoration process was performed under the following constraints:
@@ -125,13 +129,4 @@ The decision to adopt a containerized database environment was driven by repeate
 Given the increasing industry adoption of container-based workflows and their advantages in isolation, repeatability, and environment parity, Docker was selected as a pragmatic alternative rather than a modernization effort. The goal remains faithful restoration of the original system behavior, while reducing host-specific instability that could hinder controlled security experimentation.
 
 The next phase will validate application connectivity and begin systematic attack scenario design in `02-attack-scenarios`.
-
-
-
-
-
-
-
-
-
 
