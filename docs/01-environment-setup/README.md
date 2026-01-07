@@ -77,8 +77,6 @@ This approach offers:
 * Repeatable setup procedures
 * Reduced dependency on host OS configuration
 
-However, Docker usage introduced additional constraints related to WSL2 availability and host OS update limitations, which are documented separately.
-
 ---
 
 ## Security Implications
@@ -129,6 +127,7 @@ The decision to adopt a containerized database environment was driven by repeate
 Given the increasing industry adoption of container-based workflows and their advantages in isolation, repeatability, and environment parity, Docker was selected as a pragmatic alternative rather than a modernization effort. The goal remains faithful restoration of the original system behavior, while reducing host-specific instability that could hinder controlled security experimentation.
 
 The next phase will validate application connectivity and begin systematic attack scenario design in `02-attack-scenarios`.
+
 
 
 
