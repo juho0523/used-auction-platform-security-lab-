@@ -63,8 +63,6 @@ Observed issues included:
 * Dependency on temporary directories within non-ASCII (Korean) Windows user paths
 * Inconsistent behavior despite manual TEMP directory reassignment
 
-Detailed logs and screenshots are archived in `oracle-install-errors.md` and the `screenshots/` directory.
-
 ---
 
 ## Alternative Approaches Considered
@@ -127,6 +125,7 @@ The decision to adopt a containerized database environment was driven by repeate
 Given the increasing industry adoption of container-based workflows and their advantages in isolation, repeatability, and environment parity, Docker was selected as a pragmatic alternative rather than a modernization effort. The goal remains faithful restoration of the original system behavior, while reducing host-specific instability that could hinder controlled security experimentation.
 
 The next phase will validate application connectivity and begin systematic attack scenario design in `02-attack-scenarios`.
+
 
 
 
