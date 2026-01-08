@@ -30,12 +30,10 @@ Apache Tomcat and Oracle XE as a case study for security risk analysis.
 
 ## Repository Structure
 
-- 00-environment-issues: Environment setup failures and root cause analysis
-- 01-environment-rebuild: Infrastructure recovery using alternative approaches
-- 02-project-revival: Restoring the legacy application
-- 03-attack-scenarios: Web application attack simulations
-- 04-defense-hardening: Defensive measures and security improvements
-- 05-lessons-learned: Final analysis and conclusions
+- 01-environment-setup
+- 02-attack-scenarios
+- 03-defense-hardening
+- 04-retrospective
 
 ## Security Approach
 
