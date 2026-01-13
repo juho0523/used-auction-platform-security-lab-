@@ -6,7 +6,7 @@
  type="javax.sql.DataSource"              
 driverClassName="oracle.jdbc.OracleDriver"            
 url="jdbc:oracle:thin:@localhost:1521:xe"             
- username="legacy_app" password="legacy_app" 
+ username="auction" password="auction" 
 maxTotal="20" maxIdle="10"              
 maxWaitMillis="-1"/>
 
