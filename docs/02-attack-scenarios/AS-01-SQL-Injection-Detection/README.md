@@ -1,81 +1,80 @@
-# AS-01 — SQL Injection Attempt & Detection Gap Analysis
-
-> **Category**: Web Application Security  
-> **Focus**: SQL Injection Attempt, Detection Failure, SOC Visibility  
-> **Target Role**: SOC Analyst / CERT (CSIRT)
-
----
+# AS-01: SQL Injection Attempt and Detection Gap Analysis
 
 ## 1. Overview
 
-This scenario documents an **attempted SQL Injection (SQLi)** attack against a legacy Java web application built using **JSP / Servlet architecture**.
+This document describes an attempted SQL Injection (SQLi) attack against a legacy Java web application implemented using JSP and Servlet architecture.
 
-Although the attack itself was **unsuccessful** due to the use of **parameterized SQL queries**, the analysis revealed a **critical detection gap** from a SOC perspective:
+The attack was unsuccessful due to the application’s use of parameterized SQL queries.  
+However, the analysis identified a significant operational issue: from a SOC perspective, existing log sources did not provide sufficient information to distinguish SQL Injection attempts from normal authentication failures.
 
-> 🔴 *The SOC could not reliably distinguish SQL Injection attempts from normal authentication failures using existing logs.*
-
-This scenario focuses on **detection, logging design, and incident response readiness**, rather than exploitation success.
+The purpose of this scenario is to evaluate detection visibility, logging adequacy, and incident response readiness rather than exploitation success.
 
 ---
 
 ## 2. Environment
 
-| Component | Details |
-|---------|--------|
-| Application | Legacy Java Web App (JSP / Servlet) |
-| App Server | Apache Tomcat 8.0.30 |
+| Component | Description |
+|---------|-------------|
+| Application | Legacy Java Web Application (JSP / Servlet) |
+| Application Server | Apache Tomcat 8.0.30 |
 | Database | Oracle XE (Docker-based) |
-| Architecture | Front Controller + Action Pattern |
-| Logging | Tomcat Access Log, Catalina Log |
+| Architecture | Front Controller with Action-based routing |
+| Log Sources | Tomcat Access Log, Tomcat Application Log (Catalina) |
 
 ---
 
 ## 3. Threat Model
 
 ### 3.1 Threat Actor
-- External, unauthenticated attacker
-- Internet-facing access
+
+- External, unauthenticated user
+- Direct access to public-facing endpoints
 
 ### 3.2 Target Asset
-- **Authentication endpoint**
+
+Authentication endpoint:
+
+
+```log
 POST /controller?cmd=loginAction
+```
+User-controlled input parameters (user ID and password) are processed by the backend authentication logic.
 
-- User-controlled input (ID / Password)
+### 3.3 Considered Attack Scenarios
 
-### 3.3 Possible Attack Scenarios
-
-| Attack Type | Description |
-|------------|------------|
+| Scenario | Description |
+|---------|-------------|
 | SQL Injection | Authentication bypass attempt |
-| Brute Force | Repeated login attempts |
-| Credential Stuffing | Automated credential reuse |
+| Brute Force | Repeated login attempts using multiple credentials |
+| Credential Stuffing | Automated login attempts using leaked credentials |
 
-⚠️ Without enhanced logging, these scenarios appear **identical** from a SOC viewpoint.
+Without additional context, these scenarios are indistinguishable based on basic access logs alone.
 
 ---
 
 ## 4. Attack Attempt
 
-A manual SQL Injection payload was submitted through the login form.
+A manual SQL Injection payload was submitted through the login form to test authentication bypass behavior.
 
-**Payload example:**
+Payload used during testing:
+
 ```log
 ' OR '1'='1
-```
+
 
 ### Result
 
-| Item | Outcome |
-|----|----|
-| Authentication bypass | ❌ Failed |
-| SQL error exposure | ❌ None |
-| Server crash | ❌ None |
+| Item                    | Outcome      |
+| ----------------------- | ------------ |
+| Authentication bypass   | Failed       |
+| SQL error exposure      | Not observed |
+| Application instability | Not observed |
 
-📌 The application uses **PreparedStatement**, effectively preventing classic SQL Injection.
+The backend authentication logic utilizes parameterized queries (PreparedStatement), which prevents classic SQL Injection exploitation.
 
 ---
 
-## 5. Evidence Collected (Raw Logs)
+## 5. Evidence Collected 
 
 ### 5.1 Tomcat Access Log
 
@@ -92,22 +91,18 @@ SessionListener: contextDestroyed()
 ```
 ### Observations
 
-- ✔ Request method and endpoint are recorded
-- ✔ HTTP status code is visible
-- ❌ Request parameters are not logged
-- ❌ No distinction between normal login failure and malicious input
-- ❌ No SQL-related error or anomaly indicators
+-HTTP method, endpoint, and response status are recorded
+-Request parameters are not logged
+-Authentication failure reasons are not recorded
+-No SQL-related error or anomaly information is available
 
-📌 **Observation Summary**:  
-The existing logs provide **operational visibility**, but lack **security context** required for attack detection.
+The collected logs provide basic operational data but lack the security context required for attack identification.
 
 ---
 
 ## 6. Detection Gap Analysis
 
-Despite an actual SQL Injection attempt being performed during testing:
-
-> ❗ **No available log source could reliably identify the activity as SQL Injection.**
+Although an SQL Injection attempt was performed, none of the available log sources allowed reliable identification of the activity as SQL Injection.
 
 ### Identified Detection Gaps
 
@@ -116,17 +111,17 @@ Despite an actual SQL Injection attempt being performed during testing:
 - Database-side SQL errors are not logged or correlated
 - No detection rules or alerting thresholds are defined
 
-### SOC Impact Assessment
+### Impact on SOC Operations
 
-| Impact Area | Description |
-|------------|-------------|
-| Detection Accuracy | SQLi attempts indistinguishable from benign failures |
-| Response Speed | Manual analysis required |
-| Incident Classification | High uncertainty (SQLi vs brute force) |
-| Operational Risk | Potential missed early-stage attacks |
+| Area                    | Impact                                                          |
+| ----------------------- | --------------------------------------------------------------- |
+| Detection Accuracy      | Malicious and benign authentication failures appear identical   |
+| Incident Classification | SQL Injection cannot be distinguished from brute-force attempts |
+| Response Efficiency     | Manual investigation required                                   |
+| Risk Exposure           | Early-stage attacks may go unnoticed                            |
 
-📉 **Conclusion**:  
-From a SOC perspective, the system is **functionally secure but operationally blind**.
+
+From a SOC perspective, the system is technically secure but lacks sufficient monitoring visibility.
 
 ---
 
@@ -142,11 +137,12 @@ Design structured security logs for authentication-related events, including:
 - Authentication result (success / failure)
 - Failure category (generic, non-sensitive)
 
-**Conceptual Example:**
+Example (conceptual):
+```log
 AUTH_FAIL | ip=127.0.0.1 | endpoint=/controller | reason=INVALID_CREDENTIAL
+```
 
-
-⚠️ Sensitive information such as passwords or raw input values must **never** be logged.
+Sensitive information such as passwords or raw input values must not be logged.
 
 ---
 
@@ -156,31 +152,22 @@ AUTH_FAIL | ip=127.0.0.1 | endpoint=/controller | reason=INVALID_CREDENTIAL
 - Capture abnormal SQL execution behavior
 - Correlate database anomalies with repeated authentication failures
 
-🎯 **Objective**:  
-Improve confidence in attack classification by correlating frontend and backend signals.
+The objective is to improve confidence in attack classification through multi-layer correlation.
 
 ---
 
-### 7.3 SIEM Integration (Planned)
-
-| Component | Design Decision |
-|---------|-----------------|
-| SIEM Platform | ELK Stack or Wazuh |
-| Log Ingestion | Agent-based collection |
-| Detection Method | Rule-based correlation |
-| Alerting | Dashboard + notification |
-
-#### Example Detection Logic
-
-- Multiple authentication failures from a single IP within a short time window
-- Login attempts associated with SQL meta-character patterns
-- Authentication failures temporally aligned with database SQL errors
-
-📁 Detailed implementation is documented in **`03-logging-and-detection/`**.
+### 7.3 SIEM Integration
+-Centralize application, access, and database logs using a SIEM platform (ELK Stack or Wazuh)
+-Implement rule-based detection for:
+  -Repeated authentication failures from a single source
+  -Suspicious input patterns
+  -Temporal correlation between authentication failures and database errors
+  
+Detailed implementation is documented in **`03-logging-and-detection/`**.
 
 ---
 
-## 8. Incident Response Consideration (CERT Perspective)
+## 8. Incident Response Consideration
 
 With enhanced detection and alerting, the following response workflow becomes feasible:
 
@@ -191,7 +178,7 @@ With enhanced detection and alerting, the following response workflow becomes fe
 5. Temporary blocking or rate-limiting
 6. Incident documentation and escalation
 
-🛡️ **Detection maturity directly enables effective incident response.**
+**Detection maturity directly enables effective incident response.**
 
 ---
 
@@ -208,12 +195,7 @@ With enhanced detection and alerting, the following response workflow becomes fe
 
 ## 10. Conclusion
 
-> **A secure application can still be operationally blind.**
+This scenario demonstrates that a system can be resistant to SQL Injection while still being operationally blind from a monitoring standpoint.
 
-This scenario demonstrates how inadequate logging and correlation prevent SOC teams from identifying malicious behavior, even when attacks fail technically.
+Effective security requires not only preventive controls, but also adequate visibility to support detection and incident response activities.
 
----
-
-### ✔ Key Takeaway
-
-**Effective security requires both prevention and detection.**
