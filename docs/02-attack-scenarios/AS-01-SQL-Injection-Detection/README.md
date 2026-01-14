@@ -60,7 +60,7 @@ Payload used during testing:
 
 ```log
 ' OR '1'='1
-
+```
 
 ### Result
 
@@ -198,4 +198,5 @@ With enhanced detection and alerting, the following response workflow becomes fe
 This scenario demonstrates that a system can be resistant to SQL Injection while still being operationally blind from a monitoring standpoint.
 
 Effective security requires not only preventive controls, but also adequate visibility to support detection and incident response activities.
+
 
