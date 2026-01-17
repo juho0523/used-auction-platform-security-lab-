@@ -74,21 +74,43 @@ The backend authentication logic utilizes parameterized queries (PreparedStateme
 
 ---
 
-## 5. Evidence Collected 
+## 5. Evidence Collected
 
-### 5.1 Tomcat Access Log
+This section contains raw evidence collected during the SQL Injection testing process.
+The purpose of these artifacts is to demonstrate that the scenario was executed in a real environment
+and to support the detection gap analysis.
 
-```log
-127.0.0.1 - - [14/Jan/2026:02:09:50 +0900]
-"POST /used-auction-platform/controller?cmd=loginAction HTTP/1.1" 302 -
-```
-## 5.2 Application Log (Catalina)
+### 5.1 Access Log Configuration (Tomcat)
 
-```log
-INFO [localhost-startStop-2]
-org.apache.catalina.core.ApplicationContext.log
-SessionListener: contextDestroyed()
-```
+The following screenshot shows the AccessLogValve configuration defined in the application server.
+
+![Access Log Configuration](detection-evidence/access-log-configuration.png)
+
+This configuration records HTTP method, request URI, response status, and timestamp,
+but does not capture request parameters or payload content.
+
+---
+
+### 5.2 SQL Injection Attempt via Login Interface
+
+A manual SQL Injection payload was submitted through the login form during testing.
+
+![SQL Injection Attempt](detection-evidence/SQLi-attempt.png)
+
+The payload was entered into the user ID field and submitted to the server.
+No authentication bypass or error disclosure was observed.
+
+---
+
+### 5.3 Resulting Tomcat Access Log Entry
+
+After submitting the request, the server was stopped and the corresponding access log was collected.
+
+![Tomcat Access Log](detection-evidence/SQLi-tomcat-access-log.png)
+
+The log entry confirms that the request was processed by the server,
+but does not provide sufficient information to distinguish malicious input from a normal login failure.
+
 ### Observations
 
 -HTTP method, endpoint, and response status are recorded
@@ -157,11 +179,11 @@ The objective is to improve confidence in attack classification through multi-la
 ---
 
 ### 7.3 SIEM Integration
--Centralize application, access, and database logs using a SIEM platform (ELK Stack or Wazuh)
--Implement rule-based detection for:
-  -Repeated authentication failures from a single source
-  -Suspicious input patterns
-  -Temporal correlation between authentication failures and database errors
+- Centralize application, access, and database logs using a SIEM platform
+- Implement rule-based detection for:
+  - Repeated authentication failures from a single source
+  - Suspicious input patterns
+  - Temporal correlation between authentication failures and database errors
   
 Detailed implementation is documented in **`03-logging-and-detection/`**.
 
@@ -201,13 +223,14 @@ Effective security requires not only preventive controls, but also adequate visi
 
 ---
 
-## Evidence
+## Evidence Index
 
-The following evidence was collected during this scenario:
+The following artifacts were collected during the execution of AS-01:
 
-- Access log configuration defined in `web.xml`
-- Manual SQL Injection attempt via the login interface
-- Corresponding Tomcat access log entries
-- Observation that SQL Injection attempts are indistinguishable from normal authentication failures
+| Evidence | Description |
+|--------|------------|
+| access-log-configuration.png | Tomcat AccessLogValve configuration |
+| SQLi-attempt.png | Manual SQL Injection payload submission via login form |
+| SQLi-tomcat-access-log.png | Tomcat access log entry corresponding to the test |
 
-
+All evidence files are stored under the `detection-evidence/` directory.
