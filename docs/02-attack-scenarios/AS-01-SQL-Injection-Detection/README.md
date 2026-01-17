@@ -59,7 +59,7 @@ A manual SQL Injection payload was submitted through the login form to test auth
 Payload used during testing:
 
 ```log
-' OR '1'='1
+' OR '1'='1 --
 ```
 
 ### Result
@@ -198,5 +198,16 @@ With enhanced detection and alerting, the following response workflow becomes fe
 This scenario demonstrates that a system can be resistant to SQL Injection while still being operationally blind from a monitoring standpoint.
 
 Effective security requires not only preventive controls, but also adequate visibility to support detection and incident response activities.
+
+---
+
+## Evidence
+
+The following evidence was collected during this scenario:
+
+- Access log configuration defined in `web.xml`
+- Manual SQL Injection attempt via the login interface
+- Corresponding Tomcat access log entries
+- Observation that SQL Injection attempts are indistinguishable from normal authentication failures
 
 
