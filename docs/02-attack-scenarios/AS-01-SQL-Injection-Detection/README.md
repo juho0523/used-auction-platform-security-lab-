@@ -59,7 +59,7 @@ A manual SQL Injection payload was submitted through the login form to test auth
 Payload used during testing:
 
 ```log
-' OR '1'='1' --
+' OR 1=1 --
 ```
 
 ### Result
@@ -234,4 +234,5 @@ The following artifacts were collected during the execution of AS-01:
 | SQLi-tomcat-access-log.png | Tomcat access log entry corresponding to the test |
 
 All evidence files are stored under the `detection-evidence/` directory.
+
 
