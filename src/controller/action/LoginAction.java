@@ -30,6 +30,13 @@ public class LoginAction implements Action {
 
         HttpSession session = request.getSession();
 
+        /* ===== 로그인 실패 카운트 ===== */
+        Integer failCount =
+                (Integer) session.getAttribute("LOGIN_FAIL_COUNT");
+        if (failCount == null) {
+            failCount = 0;
+        }
+
         UserVO vo = loginService.login(userId, userPw);
 
         /* ===== 입력 특성 계산 (로그 전용) ===== */
@@ -38,11 +45,16 @@ public class LoginAction implements Action {
         boolean suspicious = containsSqlMetaChar(userId);
 
         if (vo == null) {
-            // 로그인 실패 보안 로그 
+            // 실패 횟수 증가
+            failCount++;
+            session.setAttribute("LOGIN_FAIL_COUNT", failCount);
+
+            // 로그인 실패 보안 로그
             securityLogger.warning(
                 "AUTH_FAIL " +
                 "ip=" + clientIp +
                 " endpoint=" + endpoint +
+                " fail_count=" + failCount +
                 " input_len=" + inputLen +
                 " input_type=" + inputType +
                 " suspicious_pattern=" + suspicious +
@@ -51,6 +63,9 @@ public class LoginAction implements Action {
 
             return new URLModel("controller?cmd=loginUI", true);
         }
+
+        // ===== 로그인 성공 시 실패 카운트 초기화 =====
+        session.removeAttribute("LOGIN_FAIL_COUNT");
 
         // 로그인 성공 보안 로그
         securityLogger.info(
