@@ -15,6 +15,9 @@ import vo.UserVO;
 
 public class LoginAction implements Action {
 
+	private static final Logger securityLogger =
+        Logger.getLogger("SECURITY_AUTH");
+
 	private LoginService loginService = new LoginService();
 
 	@Override
