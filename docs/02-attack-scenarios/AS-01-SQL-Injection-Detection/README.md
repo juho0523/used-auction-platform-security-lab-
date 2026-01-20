@@ -59,7 +59,7 @@ A manual SQL Injection payload was submitted through the login form to test auth
 Payload used during testing:
 
 ```log
-' OR '1'='1' --
+' OR 1=1 --
 ```
 
 ### Result
@@ -147,45 +147,61 @@ From a SOC perspective, the system is technically secure but lacks sufficient mo
 
 ---
 
-## 7. Logging & Detection Design (Improvement Plan)
+## 7. Logging & Detection Gaps Identified
 
 ### 7.1 Application-Level Security Logging
 
-Design structured security logs for authentication-related events, including:
+During analysis, it was identified that the existing logging mechanisms did not provide
+sufficient context to support SOC-level detection and incident classification
+for authentication-related events.
+
+In particular, authentication failures lacked structured security context,
+making it impossible to distinguish between benign user errors and malicious attempts.
+
+From a detection perspective, the following data elements were identified as necessary
+for effective monitoring of authentication activity:
 
 - Timestamp
 - Source IP address
 - Target endpoint
 - Authentication result (success / failure)
-- Failure category (generic, non-sensitive)
+- Generic failure category (non-sensitive)
 
-Example (conceptual):
+Example of a desired log format (conceptual, not implemented in AS-01):
+
 ```log
 AUTH_FAIL | ip=127.0.0.1 | endpoint=/controller | reason=INVALID_CREDENTIAL
 ```
-
-Sensitive information such as passwords or raw input values must not be logged.
-
----
-
-### 7.2 Database Log Correlation
-
-- Enable Oracle XE SQL error logging
-- Capture abnormal SQL execution behavior
-- Correlate database anomalies with repeated authentication failures
-
-The objective is to improve confidence in attack classification through multi-layer correlation.
+At the time of this scenario, such application-level security logging was not implemented.
+Sensitive information such as passwords or raw input values should never be logged.
 
 ---
 
-### 7.3 SIEM Integration
-- Centralize application, access, and database logs using a SIEM platform
-- Implement rule-based detection for:
-  - Repeated authentication failures from a single source
-  - Suspicious input patterns
-  - Temporal correlation between authentication failures and database errors
+### 7.2 Database Log Visibility
+
+Database-level logs were not available for correlation during this scenario.
+
+As a result, abnormal SQL execution behavior or database-side anomalies
+could not be correlated with authentication failures observed at the application layer.
+
+The absence of database visibility further reduced confidence
+in classifying suspicious authentication activity as SQL Injection attempts.
+
+---
+
+### 7.3 Centralized Detection and Correlation
+The analysis revealed that logs were distributed across multiple sources
+without centralized aggregation or correlation.
+
+Without a SIEM or equivalent detection platform, it was not possible to define
+rule-based detection logic such as:
+- Repeated authentication failures from a single source
+- Temporal clustering of suspicious login attempts
+- Correlation between authentication failures and backend anomalies
+Centralized log collection and rule-based detection were identified as necessary
+to improve SOC visibility and enable timely alerting.
   
-Detailed implementation is documented in **`03-logging-and-detection/`**.
+The implementation of these improvements is documented separately in **`03-logging-and-detection/`**.
 
 ---
 
@@ -206,12 +222,9 @@ With enhanced detection and alerting, the following response workflow becomes fe
 
 ## 9. Lessons Learned
 
-- Secure coding practices alone are insufficient for SOC operations
-- Detection visibility is a foundational security control
-- Logging must be designed with incident classification in mind
-- SQL Injection defense should be evaluated from both:
-  - Developer perspective
-  - SOC / CERT perspective
+- Secure coding practices can prevent exploitation but do not guarantee detection visibility.
+- From a SOC perspective, failed attacks may still represent valuable early-stage threat signals.
+- Existing logging focused on operational monitoring rather than security-driven analysis.
 
 ---
 
@@ -234,4 +247,6 @@ The following artifacts were collected during the execution of AS-01:
 | SQLi-tomcat-access-log.png | Tomcat access log entry corresponding to the test |
 
 All evidence files are stored under the `detection-evidence/` directory.
+
+
 
