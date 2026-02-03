@@ -66,8 +66,8 @@ public class LoginAction implements Action {
                 "AUTH_FAIL " +
                 "ip=" + clientIp +
                 " endpoint=" + endpoint +
-                " fail_count=" + failCount +
-                " window=" + windowSeconds + "s" +
+                " auth_fail_total=" + failCount +
+                " auth_window_sec=" + windowSeconds + "s" +
                 " input_len=" + inputLen +
                 " input_type=" + inputType +
                 " suspicious_pattern=" + suspicious +
