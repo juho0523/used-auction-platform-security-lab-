@@ -17,6 +17,8 @@ public class LoginAction implements Action {
     private static final Logger securityLogger =
             Logger.getLogger("SECURITY_AUTH");
 
+    private static final int BRUTEFORCE_WINDOW_SECONDS = 120;
+
     private LoginService loginService = new LoginService();
 
     @Override
@@ -30,31 +32,42 @@ public class LoginAction implements Action {
 
         HttpSession session = request.getSession();
 
-        /* ===== 로그인 실패 카운트 ===== */
+        /* ===== 로그인 실패 상태 로드 ===== */
         Integer failCount =
                 (Integer) session.getAttribute("LOGIN_FAIL_COUNT");
-        if (failCount == null) {
+        Long firstFailTs =
+                (Long) session.getAttribute("LOGIN_FAIL_FIRST_TS");
+
+        long now = System.currentTimeMillis();
+
+        if (failCount == null || firstFailTs == null) {
             failCount = 0;
+            firstFailTs = now;
         }
 
+        /* ===== 로그인 시도 ===== */
         UserVO vo = loginService.login(userId, userPw);
 
-        /* ===== 입력 특성 계산 (로그 전용) ===== */
+        /* ===== 입력 특성 계산 (ID 기준) ===== */
         int inputLen = (userId != null) ? userId.length() : 0;
         String inputType = classifyInputType(userId);
         boolean suspicious = containsSqlMetaChar(userId);
 
         if (vo == null) {
-            // 실패 횟수 증가
+            /* ===== 로그인 실패 ===== */
+
             failCount++;
             session.setAttribute("LOGIN_FAIL_COUNT", failCount);
+            session.setAttribute("LOGIN_FAIL_FIRST_TS", firstFailTs);
 
-            // 로그인 실패 보안 로그
+            long windowSeconds = (now - firstFailTs) / 1000;
+
             securityLogger.warning(
                 "AUTH_FAIL " +
                 "ip=" + clientIp +
                 " endpoint=" + endpoint +
                 " fail_count=" + failCount +
+                " window=" + windowSeconds + "s" +
                 " input_len=" + inputLen +
                 " input_type=" + inputType +
                 " suspicious_pattern=" + suspicious +
@@ -64,10 +77,10 @@ public class LoginAction implements Action {
             return new URLModel("controller?cmd=loginUI", true);
         }
 
-        // ===== 로그인 성공 시 실패 카운트 초기화 =====
+        /* ===== 로그인 성공 ===== */
         session.removeAttribute("LOGIN_FAIL_COUNT");
+        session.removeAttribute("LOGIN_FAIL_FIRST_TS");
 
-        // 로그인 성공 보안 로그
         securityLogger.info(
             "AUTH_SUCCESS " +
             "ip=" + clientIp +
@@ -77,18 +90,14 @@ public class LoginAction implements Action {
 
         String[] address = vo.getAddress().split(" ");
 
+        session.setAttribute("userId", vo.getUserId());
+        session.setAttribute("nickName", vo.getNickName());
+        session.setAttribute("address", address[1]);
+
         if ("U".equals(vo.getUserType())) {
-            session.setAttribute("userId", vo.getUserId());
-            session.setAttribute("nickName", vo.getNickName());
-            session.setAttribute("address", address[1]);
             return new URLModel("controller?cmd=mainUI", true);
-
         } else if ("M".equals(vo.getUserType())) {
-            session.setAttribute("userId", vo.getUserId());
-            session.setAttribute("nickName", vo.getNickName());
-            session.setAttribute("address", address[1]);
             return new URLModel("controller?cmd=mainManagerUI", true);
-
         } else {
             return new URLModel("controller?cmd=loginUI", true);
         }
