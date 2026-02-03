@@ -1,6 +1,8 @@
 package controller.action;
 
 import java.io.IOException;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
@@ -17,7 +19,11 @@ public class LoginAction implements Action {
     private static final Logger securityLogger =
             Logger.getLogger("SECURITY_AUTH");
 
-    private static final int BRUTEFORCE_WINDOW_SECONDS = 120;
+    private static final int WINDOW_SEC = 30;
+    private static final int THRESHOLD = 5;
+
+    private static final Map<String, FailTracker> failMap =
+            new ConcurrentHashMap<>();
 
     private LoginService loginService = new LoginService();
 
@@ -32,54 +38,15 @@ public class LoginAction implements Action {
 
         HttpSession session = request.getSession();
 
-        /* ===== 로그인 실패 상태 로드 ===== */
-        Integer failCount =
-                (Integer) session.getAttribute("LOGIN_FAIL_COUNT");
-        Long firstFailTs =
-                (Long) session.getAttribute("LOGIN_FAIL_FIRST_TS");
-
-        long now = System.currentTimeMillis();
-
-        if (failCount == null || firstFailTs == null) {
-            failCount = 0;
-            firstFailTs = now;
-        }
-
-        /* ===== 로그인 시도 ===== */
         UserVO vo = loginService.login(userId, userPw);
 
-        /* ===== 입력 특성 계산 (ID 기준) ===== */
-        int inputLen = (userId != null) ? userId.length() : 0;
-        String inputType = classifyInputType(userId);
-        boolean suspicious = containsSqlMetaChar(userId);
-
         if (vo == null) {
-            /* ===== 로그인 실패 ===== */
-
-            failCount++;
-            session.setAttribute("LOGIN_FAIL_COUNT", failCount);
-            session.setAttribute("LOGIN_FAIL_FIRST_TS", firstFailTs);
-
-            long windowSeconds = (now - firstFailTs) / 1000;
-
-            securityLogger.warning(
-                "AUTH_FAIL " +
-                "ip=" + clientIp +
-                " endpoint=" + endpoint +
-                " auth_fail_total=" + failCount +
-                " auth_window_sec=" + windowSeconds + "s" +
-                " input_len=" + inputLen +
-                " input_type=" + inputType +
-                " suspicious_pattern=" + suspicious +
-                " reason=INVALID_CREDENTIAL"
-            );
-
+            handleLoginFail(clientIp, endpoint, userId);
             return new URLModel("controller?cmd=loginUI", true);
         }
 
-        /* ===== 로그인 성공 ===== */
-        session.removeAttribute("LOGIN_FAIL_COUNT");
-        session.removeAttribute("LOGIN_FAIL_FIRST_TS");
+        // ===== 로그인 성공 =====
+        clearFailCount(clientIp);
 
         securityLogger.info(
             "AUTH_SUCCESS " +
@@ -88,23 +55,62 @@ public class LoginAction implements Action {
             " userType=" + vo.getUserType()
         );
 
-        String[] address = vo.getAddress().split(" ");
-
         session.setAttribute("userId", vo.getUserId());
         session.setAttribute("nickName", vo.getNickName());
-        session.setAttribute("address", address[1]);
+        session.setAttribute("address", vo.getAddress().split(" ")[1]);
 
-        if ("U".equals(vo.getUserType())) {
-            return new URLModel("controller?cmd=mainUI", true);
-        } else if ("M".equals(vo.getUserType())) {
+        if ("M".equals(vo.getUserType())) {
             return new URLModel("controller?cmd=mainManagerUI", true);
-        } else {
-            return new URLModel("controller?cmd=loginUI", true);
         }
+        return new URLModel("controller?cmd=mainUI", true);
     }
 
-    /* ===== 로그 분류용 유틸 메서드 ===== */
+    /* =========================
+       로그인 실패 처리 로직
+       ========================= */
+    private void handleLoginFail(String ip, String endpoint, String userId) {
+        long now = System.currentTimeMillis();
 
+        FailTracker tracker = failMap.getOrDefault(ip, new FailTracker());
+
+        if (tracker.firstFailTime == 0 ||
+            (now - tracker.firstFailTime) > WINDOW_SEC * 1000) {
+
+            tracker.count = 1;
+            tracker.firstFailTime = now;
+        } else {
+            tracker.count++;
+        }
+
+        failMap.put(ip, tracker);
+
+        String authLevel = tracker.count >= THRESHOLD ? "HIGH" : "LOW";
+
+        int inputLen = userId != null ? userId.length() : 0;
+        String inputType = classifyInputType(userId);
+        boolean suspicious = containsSqlMetaChar(userId);
+
+        securityLogger.warning(
+            "AUTH_FAIL " +
+            "ip=" + ip +
+            " endpoint=" + endpoint +
+            " auth_fail_total=" + tracker.count +
+            " auth_level=" + authLevel +
+            " auth_window_sec=" + WINDOW_SEC +
+            " input_len=" + inputLen +
+            " input_type=" + inputType +
+            " suspicious_pattern=" + suspicious +
+            " reason=INVALID_CREDENTIAL"
+        );
+    }
+
+    private void clearFailCount(String ip) {
+        failMap.remove(ip);
+    }
+
+    /* =========================
+       로그 분류용 유틸
+       ========================= */
     private boolean containsSqlMetaChar(String input) {
         if (input == null) return false;
         return input.matches(".*(['\";]|--).*");
@@ -115,5 +121,13 @@ public class LoginAction implements Action {
         if (input.matches("[a-zA-Z0-9]+")) return "ALPHANUM";
         if (input.matches("[a-zA-Z0-9\\W]+")) return "ALPHANUM_SPECIAL";
         return "OTHER";
+    }
+
+    /* =========================
+       내부 실패 추적 클래스
+       ========================= */
+    private static class FailTracker {
+        int count = 0;
+        long firstFailTime = 0L;
     }
 }
