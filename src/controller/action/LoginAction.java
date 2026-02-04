@@ -84,6 +84,8 @@ public class LoginAction implements Action {
 
         failMap.put(ip, tracker);
 
+        long elapsedSec = (tracker.count > 1) ? (now - tracker.firstFailTime) / 1000 : 0;
+
         String authLevel = tracker.count >= THRESHOLD ? "HIGH" : "LOW";
 
         int inputLen = userId != null ? userId.length() : 0;
@@ -96,7 +98,7 @@ public class LoginAction implements Action {
             " endpoint=" + endpoint +
             " auth_fail_total=" + tracker.count +
             " auth_level=" + authLevel +
-            " auth_window_sec=" + tracker.firstFailTime +
+            " auth_window_sec=" + elapsedSec +
             " input_len=" + inputLen +
             " input_type=" + inputType +
             " suspicious_pattern=" + suspicious +
