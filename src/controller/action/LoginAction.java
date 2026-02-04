@@ -96,7 +96,7 @@ public class LoginAction implements Action {
             " endpoint=" + endpoint +
             " auth_fail_total=" + tracker.count +
             " auth_level=" + authLevel +
-            " auth_window_sec=" + WINDOW_SEC +
+            " auth_window_sec=" + tracker.firstFailTime +
             " input_len=" + inputLen +
             " input_type=" + inputType +
             " suspicious_pattern=" + suspicious +
