@@ -180,20 +180,52 @@ and ensures consistent field extraction across log rotations.
 
 ### 6.3 Detection Rule
 
-The core detection rule focuses on **behavioral authentication abuse**
-rather than specific SQL syntax.
+The detection strategy shifts from signature-based matching to **Behavioral Analysis**. By offloading the stateful correlation (e.g., failure frequency) to the application layer, the SIEM rules remain lightweight, deterministic, and highly accurate.
 
 ```xml
-<rule id="100102" level="10">
-<if_matched_sid>100100</if_matched_sid>
-<match>auth_level=HIGH</match>
-<description>
-  Tomcat authentication abuse detected (SQL Injection or brute-force behavior)
-</description>
-</rule>
+<group name="tomcat,authentication,">
+
+  <rule id="100100" level="5">
+    <match>AUTH_FAIL</match>
+    <description>Tomcat login failed</description>
+    <group>authentication_failed</group>
+  </rule>
+
+  <rule id="100101" level="12">
+    <if_matched_sid>100100</if_matched_sid>
+    <match>suspicious_pattern=true</match>
+    <description>Possible SQL Injection attempt on Tomcat login</description>
+    <mitre>
+      <id>T1059</id>
+    </mitre>
+    <group>web_attack,sql_injection</group>
+  </rule>
+
+  <rule id="100102" level="10">
+    <if_matched_sid>100100</if_matched_sid>
+    <match>auth_level=HIGH</match>
+    <description>Tomcat brute-force login detected (>=5 failures in 30s)</description>
+    <mitre>
+      <id>T1110.001</id>
+    </mitre>
+    <group>authentication_failed,bruteforce,credential_access</group>
+  </rule>
+
+  <rule id="100103" level="3">
+    <match>AUTH_SUCCESS</match>
+    <description>Tomcat login success</description>
+    <group>authentication_success</group>
+  </rule>
+
+</group>
 ```
-This rule intentionally groups SQL Injection attempts and brute-force activity,
-as both represent early-stage abuse patterns against authentication endpoints.
+Strategic Implementation Highlights
+- **Hierarchical Triggering (if_matched_sid)**: Rules 100101 and 100102 are dependent on the parent rule (100100). This hierarchical structure ensures that deep inspection only occurs when an AUTH_FAIL event is first identified, optimizing the Wazuh analysis engine's performance.
+- **Application-Assisted Correlation**: Traditionally, SIEMs calculate brute-force attempts using frequency/time-window functions (e.g., frequency: 5, timeframe: 30). Here, the logic is handled by the application, which passes the auth_level=HIGH flag. This reduces SIEM CPU overhead and eliminates false positives caused by log ingestion delays.
+- **Severity-Based Alerting**:
+  - Level 12 (Critical): SQL Injection attempts are assigned a higher severity because they indicate a direct attempt to exploit application logic vulnerabilities.
+  - Level 10 (High): Brute-force attacks represent high-volume credential probing and warrant immediate IP-reputation triaging.
+- **MITRE ATT&CK Alignment**: Each high-severity rule is mapped to specific MITRE techniques (T1059, T1110.001). This allows the SOC team to integrate these alerts into a broader threat hunting framework and correlate them with other lateral movement signals.
 
 ## 7. Detection Results
 
