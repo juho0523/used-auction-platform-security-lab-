@@ -12,7 +12,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Document</title>
+<title>호박마켓 : 채팅리스트</title>
 <link rel="stylesheet" href="css/common.css">
 <link rel="stylesheet" href="css/chatList.css">
 <link
@@ -35,9 +35,11 @@
 a {
 	text-decoration: none;
 	color: #000000;
+	margin-right: 5px;
 }
 #top {
-	margin-top: 10px;
+	padding-top: 10px;
+	padding-left: 5px;
 }
 #unreadCount {
 	color: white;
@@ -48,6 +50,11 @@ a {
 	vertical-align: middle;
 	border-radius: 4px;
 }
+#scroll {
+	overflow-y: scroll;
+	scrollbar-width: none;
+	height: 468px;
+}
 </style>
 
 <body>
@@ -55,22 +62,33 @@ a {
 	<div id="project_container">
 
 		<div id="top">
-			<div id="previous"></div>
+			<div></div>
 			<h6 id="top-head">채팅</h6>
-			<a href="chat.jsp"> <img src="images/icon/headset.png">
-			</a>
+			<div></div>
 		</div>
 
 		<div class="container">
 			<ul class="list-group w-100" id="scroll">
-				<% if(chatList != null){ %>
+				<c:if test="${empty chatList}">
+					<div class="card d-flex align-items-center border-0 mt-5 pt-5">
+		 				<img src="./images/product/uploaded/logo.png" class="logo">
+		  				<div class="card-body">
+		    				<p class="card-text">채팅이 없습니다.</</p>
+		  				</div>
+					</div>
+				</c:if>
+			
+				<% if(chatList != null){ %>			
 					<% for(int i=0; i<chatList.size(); i++){ %>
 					<% String toId = (chatList.get(i).getFromId().equals(userId)) ? chatList.get(i).getToId() : chatList.get(i).getFromId(); %>
 					<% String toNickName = (chatList.get(i).getFromId().equals(userId)) ? chatList.get(i).getToNickName() : chatList.get(i).getFromNickName(); %>
+					<hr class="my-1 mt-2 mb-2">
 					<li class="list-group-item border-0 p-0 product_card" data-productSeq="<%= chatList.get(i).getProductSeq() %>"
 					data-toId="<%= toId %>">
 							<div class="d-flex">
-								<img src="images/product/product1/product1-img1.jpg" class="img-fluid">
+							<div>
+								<img src="uploaded/<%= chatList.get(i).getImgURL() %>" class="thumbnail">
+							</div>
 								<div class="ms-1">
 									<div class="card-text d-flex">
 										<div id="item-title-group">
@@ -78,7 +96,7 @@ a {
 												<% if(userId.equals(chatList.get(i).getProductUserId())){ %>
 												<span class="badge badge-s">판매품</span>
 												<% } else { %>
-												<span class="badge bg-info">구매품</span>
+												<span class="badge badge-t">구매품</span>
 												<% } %>
 												<p><%= toNickName %></p>
 												<% if(chatList.get(i).getUnreadChatCount() != 0){ %>
@@ -91,7 +109,7 @@ a {
 								</div>
 							</div>
 					</li>
-					<hr class="my-1">
+
 					<% } %>
 				<% } %>
 			</ul>
@@ -114,36 +132,7 @@ a {
 
 </script>
 
-<script>
-	function getUnread(){
-		$.ajax({
-			type: "POST",
-			url: "controller?cmd=getUnreadAction",
-			data: {
-				userId: "<%= userId %>"
-			},
-			success: function(result){
-				var data = JSON.parse(result);
-				console.log(data.count);
-				if(data.count >= 1){
-					showUnread(data.count);
-				} else {
-					showUnread('');
-				}
-			}
-		});
-	}
-	
-	function getInfiniteUnread(){
-		setInterval(function(){
-			getUnread();
-		},3000);
-	}
-	
-	function showUnread(result){
-		$('#unread').html(result);
-	}
-	
+<script>	
 	function getChatList(){
 		$.ajax({
 			type: "POST",
@@ -165,8 +154,6 @@ a {
 	}
 	
 	$(document).ready(function(){
-		getUnread();
-		getInfiniteUnread();
 		getChatList();
 		getInfiniteChatList();
 	});

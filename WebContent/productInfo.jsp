@@ -1,6 +1,9 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<c:if test="${userId eq null}">
+	<c:redirect url="controller?cmd=loginUI" />
+</c:if>
 <!DOCTYPE html>
 <html>
 <head>
@@ -10,7 +13,7 @@
 <link rel="stylesheet" href="css/productInfo.css">
 <script
 	src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
-<title>Insert title here</title>
+<title>메인 : 게시글 정보</title>
 </head>
 <body>
 	<div id="project_container">
@@ -22,56 +25,13 @@
 		<div id="container">
 
     <div id="myCarousel" class="carousel slide" data-bs-ride="carousel">
-        <div class="carousel-indicators">
-            <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
-            <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
-            <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
-            <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="3" aria-label="Slide 4"></button>
-            <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="4" aria-label="Slide 5"></button>
-            <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="5" aria-label="Slide 6"></button>
-            <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="6" aria-label="Slide 7"></button>
-            <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="7" aria-label="Slide 8"></button>
-            <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="8" aria-label="Slide 9"></button>
-        </div>
         <div class="carousel-inner">
-            <div class="carousel-item active">
-                <img src="./images/product/product1/product1-img1.jpg" class="d-block w-100" alt="Image 1">
-            </div>
-            <div class="carousel-item">
-                <img src="./images/product/product1/product1-img2.png" class="d-block w-100" alt="Image 2">
-            </div>
-            <div class="carousel-item">
-                <img src="./images/product/product1/product1-img3.jpg" class="d-block w-100" alt="Image 3">
-            </div>
-            <div class="carousel-item">
-                <img src="./images/product/product1/product1-img4.png" class="d-block w-100" alt="Image 4">
-            </div>
-            <div class="carousel-item">
-                <img src="./images/product/product1/product1-img5.png" class="d-block w-100" alt="Image 5">
-            </div>
-            <div class="carousel-item">
-                <img src="./images/product/product1/product1-img6.jpg" class="d-block w-100" alt="Image 6">
-            </div>
-            <div class="carousel-item">
-                <img src="./images/product/product1/product1-img7.png" class="d-block w-100" alt="Image 7">
-            </div>
-            <div class="carousel-item">
-                <img src="./images/product/product1/product1-img8.png" class="d-block w-100" alt="Image 8">
-            </div>
-            <div class="carousel-item">
-                <img src="./images/product/product1/product1-img9.png" class="d-block w-100" alt="Image 9">
+            <div class="d-flex justify-content-center carousel-item active">
+                <img src="uploaded/${productInfo.getImgURL()}" class="d-block" alt="Image 1"
+				onerror="this.onerror=null; this.src='images/product/uploaded/logo.png'">
             </div>
         </div>
-        <button class="carousel-control-prev" type="button" data-bs-target="#myCarousel" data-bs-slide="prev">
-            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Previous</span>
-        </button>
-        <button class="carousel-control-next" type="button" data-bs-target="#myCarousel" data-bs-slide="next">
-            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Next</span>
-        </button>
     </div>
-
 			<div id="nickname">
 				<div id="nickname_img_container">
 					<img src="./images/icon/person.png">
@@ -89,12 +49,7 @@
 				<span>${productInfo.getBidMax()}P</span> <span>즉시 구매가 ${productInfo.getPrice()}P</span>
 			</div>
 			<div id="product_state">
-				<span>입찰 ${productInfo.getBidCount()}건</span> <span>경매 마감: ${productInfo.getEndDate()}</span>
-			</div>
-			<hr>
-			<div id="button">
-				<div id="bid_button">입찰</div>
-				<div id="buy_button">즉시 구매</div>
+				<span>입찰 ${productInfo.getBidCount()}건</span> <span id="end_date">${productInfo.getEndDate()}</span>
 			</div>
 			<hr>
 			<div id="content">
@@ -134,15 +89,22 @@
 		<div class="modal_default" id="report_modal">
 			<div id="report_modal_container">
 				<div id="report_modal_top">신고사유</div>
-				<textarea id="report_content"></textarea>
+				<textarea id="report_content" name="content" placeholder="신고 내용을 입력해주세요."></textarea>
 				<div id="report_modal_button_container">
 					<div id="report_close">취소</div>
 					<div id="add_report">접수</div>
 				</div>
 			</div>
 		</div>
-		<jsp:include page="/navbar_home.jsp"></jsp:include>
-	</div>
+		<div id="bottom">
+			<div id="button">
+				<div id="bid_button">입찰</div>
+				<div id="buy_button">즉시 구매</div>
+			</div>
+			<jsp:include page="/navbar_home.jsp"></jsp:include>
+	
+		</div>
+		</div>
 	<script type="text/javascript">
 	var startPrice = ${productInfo.getStartPrice()};
 	var bidMax = ${productInfo.getBidMax()};
@@ -153,7 +115,8 @@
 	var productState = "${productInfo.getState()}";
 	var productSeq = ${productInfo.getProductSeq()};
 	var sellerId = "${productInfo.getId()}";
-	
+	var myId = "${userId}"
+	var endDateStr = $("#end_date").text().split('T');
 	$(document).ready(function() {
 		if(bidMax == 0){
 			$("#price :first-child").text(startPrice.toLocaleString('ko-KR') + "P");
@@ -162,20 +125,29 @@
 			$("#price :first-child").text(bidMax.toLocaleString('ko-KR') + "P");
 		}
 		$("#price :nth-child(2)").text("즉시구매가 " + price.toLocaleString('ko-KR') + "P");
+		$("#end_date").text("경매 마감: " + endDateStr[0] + " " + endDateStr[1]);
 	});
 	$("#chat").click(function(){
-		console.log(sellerId);
+		if(sellerId == myId){
+			alert("자신과는 채팅을 할 수 없습니다!");
+			return;
+		}
 		location.href = "controller?cmd=chatUI&productSeq=" + productSeq +"&toId=" + sellerId;
 	})
+	
 	$("#add_report").click(function(){
 		var reportContent = $("#report_content").val();
+ 		if(reportContent == ""){
+			alert("신고내용을 입력해주세요!");
+			return;
+		}
 		alert("신고가 접수되었습니다!");
 		location.href = "controller?cmd=reportAction&productSeq=" + productSeq + "&reportContent=" + reportContent;
 	})
 	
 	$("#add_bid").click(function(){
 		var bidPrice = Number($("input[name=bid_price]").val());
-		if(bidPrice <= bidMax){
+		if(bidPrice <= bidMax || bidPrice < startPrice){
 			alert("입찰금액이 현재 최대 입찰금액 보다 적습니다!");
 			return;
 		}
@@ -195,6 +167,7 @@
 			alert("포인트가 부족합니다!");
 			return;
 		}
+		
 		alert("구매완료!");
 		location.href = "controller?cmd=bidAction&productSeq=" + productSeq + "&bidPrice=" + price;
 	})
@@ -234,6 +207,10 @@
 		$("#option_modal")[0].style.display="none";
 	});
 	$("#report_button").click(function(){
+		if(sellerId == myId){
+			alert("본인의 게시글에는 신고 할 수 없습니다!");
+			return;
+		}
 		$("#option_modal")[0].style.display="none";
 		$("#report_modal")[0].style.display="flex";
 		$("#report_modal")[0].style.position="absolute";

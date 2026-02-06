@@ -5,17 +5,19 @@
 <% String userId = (String)session.getAttribute("userId"); %>
 <% if(userId == null) response.sendRedirect("controller?cmd=loginUI"); %>
 <% ArrayList<ProductBoxDTO> buyList = (ArrayList<ProductBoxDTO>)request.getAttribute("buyList"); %>
+
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Document</title>
+<title>호박마켓 : 구매내역</title>
 <link rel="stylesheet" href="css/common.css">
 <link rel="stylesheet" href="css/buyList.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
 <style type="text/css">
 .modal-title {
 	color: white;
@@ -68,6 +70,19 @@
 	overflow-y: scroll;
 	scrollbar-width: none;
 }
+
+.button {
+  float: right !important;
+  margin-left: auto;
+  margin-right: 10px;
+}
+.truncate {
+    width: 160px;
+    white-space: nowrap; 
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin: 0px;
+}
 </style>
 </head>
 
@@ -79,79 +94,97 @@
 			<div></div>
 		</div>
 
-		<div class="container" id="buyList">
+    <div class="button">
+      <button id="selling" class="btn btn-primary rounded-pill">구매중</button>
+      <button id="sellComplete" class="btn btn-primary rounded-pill">구매종료</button>
+    </div>
 
+		<div class="container" id="buyList">
+			<hr class="my-1">
+			
+        <c:if test="${empty buyList}">
+        <div class="card d-flex align-items-center border-0 mt-5 pt-5">
+          <img src="./images/product/uploaded/logo.png" class="logo">
+          <div class="card-body">
+              <p class="card-text">구매 내역이 없습니다.</</p>
+          </div>
+        </div>
+        </c:if>			
+			
 			<ul class="list-group w-100">
-				<hr class="my-1">
 				
 				<% if(buyList != null){ %>
-				<% for(int i=0; i<buyList.size(); i++){ %>
-				<li class="list-group-item border-0 p-0">
-					<div class="d-flex product_card" data-productSeq="<%= buyList.get(i).getProductSeq() %>">
-						<img src="images/product/product2/product2-img1.jpg" class="img-fluid">
-						<div class="ms-1">
-							<div class="card-text d-flex">
-								<div id="item-title-group">
-									<h6><%= buyList.get(i).getTitle() %></h6>
-									<p><%= buyList.get(i).getCategory() %></p>
-									<p><%= buyList.get(i).getAddress() %> | 종료일 <%= buyList.get(i).getEndDate() %></p>
-									<span class="badge badge-e">판매가</span> 
-									<span><%= buyList.get(i).getBidMax() %>P</span> 
-									<span>입찰 <%= buyList.get(i).getBidCount() %>건</span>
-									
-
-								</div>
-							</div>
-						</div>
-					</div>
-					<% if(buyList.get(i).getState().equals("T")){ %>
-					<div>
-						<button id="buyComplete" class="btn btn-primary rounded-pill buyComplete"
-							data-bs-toggle="modal" data-bs-target="#exampleModal" 
-							data-productSeq="<%= buyList.get(i).getProductSeq() %>">구매확정</button>
-			 		</div>
-			 		<% } else if(buyList.get(i).getState().equals("E")){ %>
-					<div>
-						<button id="buyEnd" class="btn btn-primary rounded-pill buyEnd" disabled>구매확정완료</button>
-					</div>							 		
-			 		<% } %>
-				</li>
-				<hr class="my-1">
-				<% } %>
+        <% for(int i=0; i<buyList.size(); i++){ %>
+        <div class="d-flex product_card" data-productSeq="<%= buyList.get(i).getProductSeq() %>">
+          <img src="uploaded/<%= buyList.get(i).getImgURL() %>" 
+            alt="상품이미지" onerror="this.onerror=null; this.src='images/product/uploaded/logo.png'"
+            class="img-fluid">
+          <div class="ms-1">
+            <div class="card-text d-flex">
+              <div id="item-title-group">
+                <div class="d-flex product_title">
+                  <h6 class="truncate"><%= buyList.get(i).getTitle() %></h6>
+                  <% if(buyList.get(i).getState().equals("S")){ %>
+                  <span class="badge badge-s">판매중</span>
+                  <% } else if(buyList.get(i).getState().equals("T")) {  %>
+                  <span class="badge bg-info">거래중</span>
+                  <% } %>
+                </div>
+                <p><%= buyList.get(i).getCategory() %></p>
+                <p class="end_date"><%= buyList.get(i).getAddress() %>
+                  | 종료일
+                  <%= buyList.get(i).getEndDate() %></p>
+                <span class="badge badge-s">입찰가</span> 
+                <% if(buyList.get(i).getBidMax() == 0){ %>
+                <span><%= buyList.get(i).getStartPrice() %>P</span> 
+                <% } else {%>
+                <span><%= buyList.get(i).getBidMax() %>P</span> 
+                <% } %>
+                <span class="badge badge-s">즉구가</span> 
+                <span><%= buyList.get(i).getPrice() %>P</span>
+                <span>입찰 <%= buyList.get(i).getBidCount() %>건
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <hr class="my-1">
+        <% } %>
 				<% } %>
 				
 			</ul>
 			
-			<div class="modal fade" id="exampleModal" tabindex="-1"
-				aria-labelledby="exampleModalLabel" aria-hidden="true">
-				<div class="modal-dialog modal-dialog-centered justify-content-center">
-					<div class="modal-content">
-						<div class="modal-header d-flex justify-content-center">
-							<h5 class="modal-title" id="exampleModalLabel">평가</h5>
-						</div>
-						<div class="modal-body">
-							<div id="starContainer">
-								<div class="star" id="star1"></div>
-								<div class="star" id="star2"></div>
-								<div class="star" id="star3"></div>
-								<div class="star" id="star4"></div>
-								<div class="star" id="star5"></div>
-							</div>
-						</div>
-						<div class="modal-footer justify-content-center">
-							<button type="button" class="btn btn-secondary"
-								data-bs-dismiss="modal">취소</button>
-							<button id="save" type="button" class="btn btn-primary">확인</button>
-						</div>
-					</div>
-				</div>
-			</div>
+
 			
 		</div>
 		<jsp:include page="/navbar_buy.jsp"></jsp:include>
 	</div>
+	
+      <div class="modal fade" id="exampleModal" tabindex="-1"
+        aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered justify-content-center">
+          <div class="modal-content">
+            <div class="modal-header d-flex justify-content-center">
+              <h5 class="modal-title" id="exampleModalLabel">평가</h5>
+            </div>
+            <div class="modal-body">
+              <div id="starContainer">
+                <div class="star" id="star1"></div>
+                <div class="star" id="star2"></div>
+                <div class="star" id="star3"></div>
+                <div class="star" id="star4"></div>
+                <div class="star" id="star5"></div>
+              </div>
+            </div>
+            <div class="modal-footer justify-content-center">
+              <button type="button" class="btn btn-secondary"
+                data-bs-dismiss="modal">취소</button>
+              <button id="save" type="button" class="btn btn-primary">확인</button>
+            </div>
+          </div>
+        </div>
+      </div>	
 
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 	<script type="text/javascript">
 		// 별 이미지 요소 가져오기
 		const stars = document.querySelectorAll('.star');
@@ -215,6 +248,10 @@
 		}
 		
 		$(document).ready(function() {
+			$(".end_date").each(function(){
+				var str = $(this).text().split('T');
+				$(this).text(str[0] + " " + str[1]);
+			})
 			cardClick();
 		});
 		
@@ -227,7 +264,76 @@
 		$(".buyComplete").on('click', function(){
 			productSeq = this.dataset.productseq;
 		});
-	</script>
+
+    document.addEventListener('DOMContentLoaded', function() {
+        var selling = document.querySelector('#selling');
+        var sellComplete = document.querySelector('#sellComplete');
+
+        selling.style.backgroundColor = '#E07F39';
+        selling.style.borderColor = '#E07F39';
+
+        selling.addEventListener('click', function(){
+            selling.style.backgroundColor = '#E07F39';
+            selling.style.borderColor = '#E07F39';
+
+            sellComplete.style.backgroundColor = '#FFB966';
+            sellComplete.style.borderColor = '#FFB966';
+
+            $.ajax({
+                url: "controller?cmd=buyListAction",
+                type: "POST",
+                data: {
+                    type: "buying"
+                },
+                success: function(response) {
+                    $("#buyList").html(response);
+                    cardClick();
+                    buyCompleteClick();
+                }
+            });
+        });
+
+        sellComplete.addEventListener('click', function(){
+            sellComplete.style.backgroundColor = '#E07F39';
+            sellComplete.style.borderColor = '#E07F39';
+
+            selling.style.backgroundColor = '#FFB966';
+            selling.style.borderColor = '#FFB966';        
+
+            $.ajax({
+                url: "controller?cmd=buyListAction",
+                type: "POST",
+                data: {
+                    type: "buyComplete"
+                },
+                success: function(response) {
+                    $("#buyList").html(response);
+                    cardClick();
+                    buyCompleteClick();
+                }
+            });
+        });
+        
+    $(document).ready(function() {
+      cardClick();
+      buyCompleteClick();
+    });
+    
+    cardClick = function(){
+      $(".product_card").on('click', function() {
+        location.href = "controller?cmd=productInfoUI&productSeq="+ this.dataset.productseq;
+      });
+    };
+
+    buyCompleteClick = function(){
+        $(".buyComplete").on('click', function(){
+            productSeq = this.dataset.productseq;
+        });       
+    };
+    
+    });
+
+  </script>
 
 </body>
 </html>

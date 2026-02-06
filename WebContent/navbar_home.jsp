@@ -1,5 +1,7 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-	pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<% String userId1 = (String)session.getAttribute("userId"); %>
+<% if(userId1 == null) response.sendRedirect("controller?cmd=loginUI"); %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <body>
@@ -29,5 +31,40 @@
 		</div>
 	</div>
 	</nav>
+<script>
+function getUnread(){
+	$.ajax({
+		type: "POST",
+		url: "controller?cmd=getUnreadAction",
+		data: {
+			userId: "<%= userId1 %>"
+		},
+		success: function(result){
+			var data = JSON.parse(result);
+			//console.log(data.count);
+			if(data.count >= 1){
+				showUnread(data.count);
+			} else {
+				showUnread('');
+			}
+		}
+	});
+}
+
+function getInfiniteUnread(){
+	setInterval(function(){
+		getUnread();
+	},3000);
+}
+
+function showUnread(result){
+	$('#unread').html(result);
+}
+
+$(document).ready(function(){
+	getUnread();
+	getInfiniteUnread();
+});
+</script>
 </body>
 </html>

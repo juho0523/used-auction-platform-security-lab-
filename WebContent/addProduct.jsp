@@ -1,7 +1,9 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<%@page import="com.oreilly.servlet.multipart.DefaultFileRenamePolicy"%>
-<%@page import="com.oreilly.servlet.MultipartRequest"%>
+<%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<c:if test="${userId eq null}">
+	<c:redirect url = "controller?cmd=loginUI"/>
+</c:if>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -19,21 +21,22 @@
 <link rel="stylesheet" href="css/common.css">
 <link rel="stylesheet" href="css/addProduct.css">
 <meta charset="UTF-8">
-<title>Insert title here</title>
+<title>메인 : 글 등록</title>
 </head>
 <body>
+
 <div id = "project_container">
 	<div id = top>
 		<img src="./images/icon/arrow.png">
 		<h1>상품등록</h1>
 	</div>
 	<div id="container">
-		<form action="controller?cmd=addProductAction" method="post" encType="multipart/form-data">
+		<form action="controller?cmd=addProductAction" method="post" encType="multipart/form-data" onsubmit = "return addSubmit()">
 		<div id="img_list_container">
 			<div class="img_container">
 				<label for="input_file">
 					<img id="camera" src="./images/icon/camera.png">
-					<span id="img-count">0</span><span>/5</span>
+					<span id="img-count">0</span><span>/1</span>
 				</label>
 				<input type="file" id="input_file" name="file" accept="image/*" multiple>
 			</div>
@@ -51,13 +54,13 @@
 					<button class="btn btn-sm dropdown-toggle" type="button"
 						id="categoryBtn" data-bs-toggle="dropdown" aria-expanded="false">카테고리</button>
 					<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-						<a class="dropdown-item active bg-warning rounded-3" href="#">카테고리</a>
+						<a class="dropdown-item active" href="#">카테고리</a>
 						<a class="dropdown-item" href="#">디지털 기기</a> 
 						<a class="dropdown-item" href="#">가구/인테리어</a> 
 						<a class="dropdown-item" href="#">유아동</a> 
 						<a class="dropdown-item" href="#">의류</a> 
 						<a class="dropdown-item" href="#">잡화</a> 
-						<input name="category" id="category_value" type="hidden" required>
+						<input name="category" id="category_value" type="hidden" value="카테고리" required>
 					</div>
 				</div>
 				</td>
@@ -69,14 +72,11 @@
 					<button class="btn btn-sm dropdown-toggle" type="button"
 						id="regionBtn" data-bs-toggle="dropdown" aria-expanded="false">강남구</button>
 					<div class="dropdown-menu" aria-labelledby="dropdownMenuButton" id="region">
-						<a class="dropdown-item active bg-warning rounded-3" href="#">강남구</a>
+						<a class="dropdown-item active" href="#">강남구</a>
 						<a class="dropdown-item" href="#">강동구</a> 
 						<a class="dropdown-item" href="#">강북구</a> 
 						<a class="dropdown-item" href="#">강서구</a> 
 						<a class="dropdown-item" href="#">관악구</a> 
-						<a class="dropdown-item" href="#">광진구</a> 
-						<a class="dropdown-item" href="#">구로구</a> 
-						<a class="dropdown-item" href="#">금천구</a> 
 						<input name="region" id="region_value" type="hidden" required>
 					</div>
 				</div>
@@ -117,9 +117,27 @@
 	<jsp:include page="/navbar_home.jsp"></jsp:include>
 </div>
 <script>
+	var userAddress = "${address}";
 	$(document).ready(function(){
 		$("#regionBtn").text("${address}");
 		$("#region_value").val("${address}");
+		$("#region div > a").removeClass("active");
+		$("#region div > a").css("background-color", "transparend");
+		$("#region div > a").each(function(){
+			if(userAddress === $(this).text()){
+				$(this).addClass("active");
+				$(this).css("background-color", "#FF922E");
+			}
+		})
+		$("#categoryBtn").text("카테고리");
+		$("#category div > a").removeClass("active");
+		$("#category div > a").css("background-color", "transparent");
+		$("#category div > a").each(function(){
+			if("카테고리" === $(this).text()){
+				$(this).addClass("active");
+				$(this).css("background-color", "#FF922E");
+			}
+		})
 	})
 	$("input[type=file]").on("change", function(){
 		let container = document.getElementById("img_list_container");
@@ -133,43 +151,53 @@
 		}
 	})
 	$("#region div > a").on("click", function() {
-		console.log($(this).text());
 		$("#regionBtn").text($(this).text());
 		$("#region_value").val($(this).text());
-		$("#region div > a").removeClass("active bg-warning rounded-3");
-		$(this).addClass("active bg-warning rounded-3");
 	})
 			
 	$("#category div > a").on("click", function() {
-		console.log($(this).text());
 		$("#categoryBtn").text($(this).text());
 		$("#category_value").val($(this).text());
-		$("#category div > a").removeClass("active bg-warning rounded-3");
-		$(this).addClass("active bg-warning rounded-3");
 	})
 	
 	$("#region div > a").on('mousedown', function(){
-		$("#region div > a").removeClass("active bg-warning rounded-3");
-		$(this).addClass("active bg-warning rounded-3");
+		$("#region div > a").removeClass("active");
+		$("#region div > a").css("background-color", "transparent");
+		$(this).addClass("active");
+		$(this).css("background-color", "#FF922E");
 	})
 	$("#category div > a").on('mousedown', function(){
-		$("#category div > a").removeClass("active bg-warning rounded-3");
-		$(this).addClass("active bg-warning rounded-3");
+		$("#category div > a").removeClass("active");
+		$("#category div > a").css("background-color", "transparent");
+		$(this).addClass("active");
+		$(this).css("background-color", "#FF922E");
 	})
 	
 	$("#top img").on("click", function(){
 		history.back();
 	})
 	
-	$("#category_value")
-		$("input[name=bid_price]").on("change", function(){
+	$("input[name=start_price]").on("change", function(){
 		var price = Number($("input[name=price]").val());
 		var bid_price = Number($(this).val());
 		if(bid_price >= price){
 			alert("경매시작금액은 즉시구매금액 보다 적어야 합니다!");
 			this.value = null;
 		}
-	}) 
+	})
+	
+	function addSubmit(){
+		if($("#input_file").val() == ""){
+			alert("상품 이미지를 등록해주세요!");
+			return false;
+		}
+		if($("#category_value").val() == "카테고리"){
+			alert("카테고리를 선택해주세요!");
+			return false;
+		}
+		return true;
+	}
 </script>
 </body>
 </html>
+
