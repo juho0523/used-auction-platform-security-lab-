@@ -19,7 +19,7 @@ public class AddProductAction implements Action {
 	@Override
 	public URLModel execute(HttpServletRequest request) throws ServletException, IOException {
 		//String directory = "C:/Users/KOSTA/git/UsedAuctionPlatform/UsedAuctionPlatform/WebContent/WEB-INF/uploaded";
-		String directory = "C:/Users/KOSTA/git/UsedAuctionPlatform/UsedAuctionPlatform/"
+		String directory = "../../../"
 				+ "WebContent/images/product/uploaded";
 		int sizeLimit = 100*1024*1024;		//100MB �젣�븳
 
