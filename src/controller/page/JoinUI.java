@@ -20,7 +20,7 @@ public class JoinUI implements Action {
 	public URLModel execute(HttpServletRequest request) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 
-		return new URLModel("join.jsp", true);
+		return new URLModel("join.jsp", false);
 	}
 
 }

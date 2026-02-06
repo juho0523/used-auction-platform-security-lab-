@@ -19,7 +19,7 @@ public class LogoutAction implements Action {
 		session.invalidate();
 
 		
-		String page = "login.jsp";
+		String page = "controller?cmd=loginUI";
 
 		
 		return new URLModel(page, true);

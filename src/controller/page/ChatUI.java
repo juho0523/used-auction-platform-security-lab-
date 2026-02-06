@@ -30,7 +30,7 @@ public class ChatUI implements Action {
 		chatService.readChat(productSeq, userId, toId);
 		
 		ProductService productService = new ProductService();
-		request.setAttribute("product", productService.getProduct(productSeq));
+		request.setAttribute("product", productService.getProductChat(productSeq));
 		
 		UserService userService = new UserService();
 		request.setAttribute("toNickName", userService.getUsers(toId).getNickName());

@@ -22,7 +22,8 @@ public class AddChatAction implements Action {
 		ChatService chatService = new ChatService();
 		chatService.addChat(productSeq, fromId, toId, chatContent);
 		
-		return new URLModel("chat.jsp",true);
+		return new URLModel("chat.jsp",false);
+		
 	}
 
 }

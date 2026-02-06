@@ -17,23 +17,35 @@ public class FindIDAction implements Action {
 	@Override
 	public URLModel execute(HttpServletRequest request) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		String page = "findID.jsp";
-		
-
+		//String page = "showID.jsp";
+		HttpSession session = request.getSession();
+		String messageContent = "";
 		
 		String name = request.getParameter("name");
 		String phoneNumber = request.getParameter("phoneNumber");
 		String email = request.getParameter("email");
 		
-		String id = new FindIDService().findId(name, email, phoneNumber);
-		System.out.println("아이디  : "+id);
-		if(id != null){
-			page = "showID.jsp";
-			//서비스에서 아이디 가져와서 세션에 아이디 넣어줘야
-			request.setAttribute("id", id);
+		if(name == "" || phoneNumber == "" || email == ""){
+			messageContent = "정보를 입력해주세요.";
+			session.setAttribute("messageContent", messageContent);
+			return new URLModel("controller?cmd=findIDUI", true);
 		}
 		
-		return  new URLModel(page, false);
+		String id = new FindIDService().findId(name, email, phoneNumber);
+		//System.out.println("아이디  : "+id);
+		
+		if(id == null){
+			messageContent = "존재하지 않는 회원정보입니다.";
+			session.setAttribute("messageContent", messageContent);
+			return new URLModel("controller?cmd=findIDUI", true);
+		} else {
+			messageContent = "아이디는 ["+id+"] 입니다.";
+			session.setAttribute("messageContent", messageContent);
+			return new URLModel("controller?cmd=loginUI", true);
+		}
+		
+		//request.setAttribute("id", id);
+		//return  new URLModel("controller?cmd=loginUI", true);
 	}
 
 }

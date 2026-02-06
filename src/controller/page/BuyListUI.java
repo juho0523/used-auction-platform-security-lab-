@@ -16,7 +16,7 @@ public class BuyListUI implements Action {
 
 		String userId = (String)request.getSession().getAttribute("userId");
 		
-		request.setAttribute("buyList", new ProductBuyListService().getBuyList(userId));
+		request.setAttribute("buyList", new ProductBuyListService().getBuyingList(userId));
 		
 		return new URLModel("buyList.jsp", false);
 	}

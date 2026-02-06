@@ -8,12 +8,10 @@ import javax.servlet.http.HttpServletRequest;
 import controller.Action;
 import controller.URLModel;
 
-public class FindPWUI implements Action {
+public class ErrorUI implements Action {
 
 	@Override
 	public URLModel execute(HttpServletRequest request) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		return new URLModel("findPW.jsp", false);
+		return new URLModel("error.jsp", true);
 	}
-
 }

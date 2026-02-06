@@ -24,6 +24,7 @@ public class GetChatAction implements Action {
 		
 		ChatService chatService = new ChatService();
 		request.setAttribute("chat", chatService.getChat(productSeq, fromId, toId));
+		chatService.readChat(productSeq, fromId, toId);
 		
 		return new URLModel("asynchronous_chat.jsp",false);
 	}

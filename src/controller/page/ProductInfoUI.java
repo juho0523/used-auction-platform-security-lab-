@@ -21,6 +21,7 @@ public class ProductInfoUI implements Action {
 		int productSeq = Integer.parseInt(request.getParameter("productSeq"));
 		
 		ProductBoxDTO dto = new ProductService().getProduct(productSeq);
+		dto.setImgURL(new ProductService().getProductImage(productSeq));
 		
 		int point = new UserService().getUser((String)session.getAttribute("userId"));
 		request.setAttribute("productInfo", dto);

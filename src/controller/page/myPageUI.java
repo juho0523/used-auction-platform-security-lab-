@@ -9,6 +9,7 @@ import javax.servlet.http.HttpSession;
 import controller.Action;
 import controller.URLModel;
 import service.MyPageService;
+import service.UserService;
 import vo.UserVO;
 
 public class myPageUI implements Action {
@@ -18,8 +19,8 @@ public class myPageUI implements Action {
 		// TODO Auto-generated method stub
 		HttpSession session = request.getSession();
 		String id = (String) session.getAttribute("userId");
-		
 
+		
 		
 		UserVO vo = null;
 		String nickname = null;

@@ -13,7 +13,7 @@ public class SetPWUI implements Action {
 	@Override
 	public URLModel execute(HttpServletRequest request) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		return new URLModel("setPW.jsp", true);
+		return new URLModel("setPW.jsp", false);
 	}
 
 }

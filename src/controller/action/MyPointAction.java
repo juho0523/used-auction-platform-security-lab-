@@ -14,7 +14,7 @@ public class MyPointAction implements Action {
 	@Override
 	public URLModel execute(HttpServletRequest request) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		String page = "myPage.jsp";
+		String page = "controller?cmd=myPageUI";
 		
 		String id = (String)request.getSession().getAttribute("userId");
 		String strPoint = request.getParameter("pointAct");
@@ -37,7 +37,7 @@ public class MyPointAction implements Action {
 		
 		
 		
-		return new URLModel(page, true);
+		return new URLModel(page, false);
 	}
 
 }

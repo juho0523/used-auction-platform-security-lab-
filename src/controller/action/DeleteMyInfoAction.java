@@ -16,16 +16,16 @@ public class DeleteMyInfoAction implements Action {
 	@Override
 	public URLModel execute(HttpServletRequest request) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		String page = "myPage.jsp";
+		String page = "controller?cmd=myPageUI";
 		
 		HttpSession session = request.getSession(true);
 		String id = (String) session.getAttribute("userId");
-
+		session.invalidate();
 		
 	
 		
 		if(new DeleteMyInfoService().setUserType(id)){
-			page = "login.jsp";
+			page = "controller?cmd=loginUI";
 		}
 		
 		return new URLModel(page, true);

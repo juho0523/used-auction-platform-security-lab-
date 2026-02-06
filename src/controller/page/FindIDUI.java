@@ -13,7 +13,7 @@ public class FindIDUI implements Action {
 	@Override
 	public URLModel execute(HttpServletRequest request) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		return new URLModel("findID.jsp", true);
+		return new URLModel("findID.jsp", false);
 	}
 
 }
