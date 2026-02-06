@@ -1,5 +1,9 @@
 @CHARSET "UTF-8";
 
+.logo{
+	width: 8em;
+	height: 8em;
+}
 body{
 	display: flex;
  	align-items: center;
@@ -69,12 +73,12 @@ body{
 }
 
 .badge-s {
-    background-color: #FF922E;
+    background-color: #FFB966;
     font-size: 10px;
 }
 
-.card-text > .badge-t {
-    background-color: #1CADFF;
+.badge-t {
+    background-color: #E07F39;
 }
 
 .card-text > .badge-e {
@@ -137,4 +141,22 @@ nav{
 	text-align: center;
 	vertical-align: middle;
 	border-radius: 4px;
+}
+
+.dropdown-item:active{
+	background-color: #FF922E;
+}
+
+.fade {
+    opacity: 0;
+    transition: opacity 0.5s linear;
+}
+#alertMessage {
+    background-color: #FF922E;
+    border-color: #FF922E;
+    color: white;
+    position: absolute; 
+    padding: 10px;
+    margin-top: 410px;
+    border-radius: 5px;
 }

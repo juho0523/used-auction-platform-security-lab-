@@ -20,7 +20,7 @@ public interface UserQuery {
 	String SET_RATE = "update users set rate = ((rate*rate_count) + ?)/(rate_count + 1) "
 			+ "where user_id = (SELECT user_id FROM product WHERE product_seq = ?)";
 	String SET_PRODUCT_STATE = "update product set state = 'E' where product_seq = ?";
-	String GET_USER = "select nickname, point, profile_img, rate from users where user_id = ?";
+	String GET_USER = "select nickname, point, profile_img, rate, phone_number, email, address from users where user_id = ?";
 	String SET_POINT = "update users set point = point + ? where user_id = ?";
 	String SET_USER = "update users set password = ?, nickname = ?, "
 			+ "phone_number = ?, email = ?, "

@@ -24,12 +24,35 @@ public class ProductBuyListService {
 		}
 	}	
 	
-	public ArrayList<ProductBoxDTO> getBuyList(String userId) {
+	public ArrayList<ProductBoxDTO> getBuyingList(String userId) {
 		ArrayList<ProductBoxDTO> buyList = new ArrayList<>();
 		
 		try {
 			conn = dataSource.getConnection();
 			buyList = new ProductDAO(conn).getBuyingHistory(userId);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			if(conn != null){
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		return buyList;
+	}
+
+	public Object getBuyCompleteList(String userId) {
+		ArrayList<ProductBoxDTO> buyList = new ArrayList<>();
+		
+		try {
+			conn = dataSource.getConnection();
+			buyList = new ProductDAO(conn).getBuyCompleteHistory(userId);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

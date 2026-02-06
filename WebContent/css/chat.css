@@ -33,8 +33,8 @@
 }
 
 .d-flex > img {
-  width: 90px;
-  height: 90px;
+  width: 70px;
+  height: 70px;
 }
 
 .d-flex > .badge {
@@ -82,12 +82,14 @@
 
 .text-group {
   display: inline-flex;
+  justify-content: space-between;
+  width: 100%;
 }
 
-.text-group > p {
-  margin-right: 5px;
+#bid_count{
+	margin-left: 20px;
+	margin-right: 0px;
 }
-
 .list-group {
   display: flex;
   flex-direction: column-reverse;
@@ -101,7 +103,7 @@
   max-width: 80%;
   border-radius: 5px;
   padding: 5px;
-  margin-bottom: 5px;
+  margin-top: 5px;
 }
 
 .you {

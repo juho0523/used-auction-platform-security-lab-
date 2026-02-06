@@ -1,8 +1,12 @@
 @CHARSET "UTF-8";
 
-.img-fluid {
-	width: 88px;
-	height: 88px;
+.dropdown-item:active{
+	background-color: #FF922E;
+}
+
+.thumbnail {
+	width: 80px;
+	height: 80px;
 }
 
 .card-text>h6 {
@@ -93,4 +97,22 @@
 	height: 6px;
 	border-radius: 50%;
 	background-color: red;
+}
+.addProduct{
+	background-color: transparent;
+	position: absolute;
+	margin-left: 245px;
+	margin-top: 405px;
+}
+
+#addProduct{
+	height: 40px;
+ 	width: 40px;
+ 	border-radius: 100px;
+ 	background-color: #FF922E; 
+}
+
+.plus{
+	width: 16px;
+	height: 16px;
 }

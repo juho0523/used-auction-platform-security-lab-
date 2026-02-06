@@ -33,9 +33,9 @@
   height: 528px;
 }
 
-.d-flex > img {
-  width: 50px;
-  height: 50px;
+.thumbnail{
+  width: 70px;
+  height: 70px;
 }
 
 .d-flex > .badge {

@@ -256,9 +256,10 @@ public class ProductBoxDTO {
 
 	@Override
 	public String toString() {
-		return "ProductBoxDTO [imgSeq=" + imgSeq + ", productSeq=" + productSeq + ", title=" + title + ", category="
-				+ category + ", startPrice=" + startPrice + ", price=" + price + ", address=" + address + ", endDate="
-				+ endDate + ", state=" + state + ", bidCount=" + bidCount + ", bidMax=" + bidMax + "]";
+		return "ProductBoxDTO [imgSeq=" + imgSeq + ", imgURL=" + imgURL + ", productSeq=" + productSeq + ", id=" + id
+				+ ", nickName=" + nickName + ", title=" + title + ", category=" + category + ", startPrice="
+				+ startPrice + ", price=" + price + ", address=" + address + ", endDate=" + endDate + ", state=" + state
+				+ ", bidCount=" + bidCount + ", bidMax=" + bidMax + ", content=" + content + "]";
 	}
-	
+
 }

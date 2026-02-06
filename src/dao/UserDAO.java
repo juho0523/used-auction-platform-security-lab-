@@ -208,7 +208,9 @@ public class UserDAO {
 					vo.setPoint(rs.getInt(2));
 					vo.setProfileImg(rs.getString(3));
 					vo.setRate(rs.getDouble(4));
-					
+					vo.setPhoneNumber(rs.getString(5));
+					vo.setEmail(rs.getString(6));
+					vo.setAddress(rs.getString(7));
 				}
 			}
 		} catch (SQLException e) {

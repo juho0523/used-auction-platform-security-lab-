@@ -1,0 +1,13 @@
+.logo{
+	width: 8em;
+	height: 8em;
+}
+
+
+.btn-lg {
+	color: #FFFFFF;
+	background-color: #FF922E;
+	border: none;
+	border-radius: 5px;
+	padding: 0.5em 1.5em;
+}

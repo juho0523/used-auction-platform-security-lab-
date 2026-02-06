@@ -50,6 +50,7 @@ public class SetPWService {
 			if(conn != null){
 				try {
 					conn.setAutoCommit(true);
+					conn.close();
 				} catch (SQLException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

@@ -30,9 +30,16 @@ public class ReportDAO {
 		return result;
 	}
 	
-	public ArrayList<ReportVO> getReportList(){
-		ArrayList<ReportVO> reportList = null;
-		
-		return reportList;
+	public boolean setReportCount(int productSeq){
+		boolean result = false;
+		try(PreparedStatement pstmt = conn.prepareStatement(ReportQuery.SET_REPORTCOUNT);){
+			pstmt.setInt(1, productSeq);
+			if(pstmt.executeUpdate() >= 1){
+				result = true;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return result;
 	}
 }

@@ -30,6 +30,7 @@ public class DuplicationService {
 		try {
 			conn = dataSource.getConnection();
 			result = new UserDAO(conn).idCheck(id);
+			conn.close();
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
@@ -41,6 +42,7 @@ public class DuplicationService {
 
 	
 	
+	
 	public boolean nickCheck(String id){
 		boolean result = false;
 		Connection conn = null;
@@ -49,6 +51,7 @@ public class DuplicationService {
 		try {
 			conn = dataSource.getConnection();
 			result = new UserDAO(conn).nickCheck(id);
+			conn.close();
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();

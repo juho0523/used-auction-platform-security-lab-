@@ -23,9 +23,9 @@
 	font-weight: 600;
 }
 
-.img-fluid {
-	width: 50px;
-	height: 50px;
+.thumbnail {
+	width: 56px;
+	height: 56px;
 }
 
 .d-flex>.badge {
@@ -37,11 +37,11 @@
 }
 
 .card-text>.badge-s {
-	background-color: #FF922E;
+	background-color: #FFB966;
 }
 
 .card-text>.badge-t {
-	background-color: #1CADFF;
+	background-color: #E07F39;
 }
 
 .card-text>.badge-e {

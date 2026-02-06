@@ -6,6 +6,7 @@ input {
 	height: 2em;
 }
 
+
 img {
 	width: 23px;
 	height: 23px;
@@ -75,10 +76,9 @@ input:focus {
 	border-radius: 3px;
 }
 
-.fontJoinH1 {
-	font-size: 2em;
-	font-weight: bold;
-}
+
+
+
 
 .joinbt {
 	color: #FFFFFF;
@@ -103,3 +103,5 @@ input:focus {
 	border-radius: 5px;
 	padding: 0.5em 1.5em;
 }
+
+

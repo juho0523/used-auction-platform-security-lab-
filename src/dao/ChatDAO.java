@@ -27,6 +27,7 @@ public class ChatDAO {
 			pstmt.setString(1, userId);
 			pstmt.setString(2, userId);
 			pstmt.setString(3, userId);
+			pstmt.setString(4, userId);
 			ResultSet rs = pstmt.executeQuery();
 			while(rs.next()){
 				ChatBoxDTO dto = new ChatBoxDTO(rs.getInt(1), rs.getInt(2), rs.getString(3), rs.getString(4), rs.getString(5), LocalDateTime.parse(rs.getString(6),formmatter), rs.getString(7), rs.getString(8), rs.getString(9), rs.getString(10), rs.getString(11), rs.getInt(12));		
@@ -84,10 +85,10 @@ public class ChatDAO {
 		
 		try (PreparedStatement pstmt = conn.prepareStatement(ChatQuery.READ_CHAT);){
 			pstmt.setInt(1, productSeq);
-			pstmt.setString(2, fromId);
-			pstmt.setString(3, toId);
-			pstmt.setString(4, toId);
-			pstmt.setString(5, fromId);
+			//pstmt.setString(2, fromId);
+			//pstmt.setString(3, toId);
+			pstmt.setString(2, toId);
+			pstmt.setString(3, fromId);
 			if(pstmt.executeUpdate() >= 1) return true;
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -102,7 +103,7 @@ public class ChatDAO {
 		
 		try (PreparedStatement pstmt = conn.prepareStatement(ChatQuery.GET_UNREAD_CHAT);){
 			pstmt.setString(1, userId);
-			pstmt.setString(2, userId);
+			//pstmt.setString(2, userId);
 			ResultSet rs = pstmt.executeQuery();
 			if(rs.next()){
 				count = rs.getInt(1);

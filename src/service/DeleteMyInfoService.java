@@ -51,6 +51,7 @@ public class DeleteMyInfoService {
 			if(conn != null){
 				try {
 					conn.setAutoCommit(true);
+					conn.close();
 				} catch (Exception e2) {
 					// TODO: handle exception
 					e2.printStackTrace();
