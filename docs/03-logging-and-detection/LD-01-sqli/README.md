@@ -17,6 +17,9 @@ the original system lacked sufficient security telemetry to:
 
 The objective of this phase is **not exploitation**, but **detection maturity**:
 to ensure that failed attacks still generate meaningful, actionable signals.
+This implementation is a controlled proof-of-concept (PoC)
+designed to validate application-assisted detection,
+not a prescriptive or production-ready logging architecture.
 
 ---
 
@@ -75,14 +78,20 @@ to reduce ambiguity and avoid reliance on access logs or network-only signals.
 
 ### 4.1 Modified Component
 
-- Component: `LoginAction`
-- Layer: Application (Controller)
+- Component: LoginAction
+- Role: Controlled authentication decision point
+- Rationale:
+  - Guaranteed execution for all authentication attempts
+  - Access to semantic authentication outcomes
+  - Selected for detection model validation, not final architecture
 
-The authentication handler was modified to emit
-**structured, SOC-oriented security logs**
-at the exact point where authentication outcomes are determined.
+LoginAction was selected as a controlled execution point
+because it represents the first location where authentication intent
+and outcome can be semantically distinguished.
 
-This ensures maximum semantic accuracy with minimal data exposure.
+This choice was made to ensure deterministic signal generation
+during detection model validation,
+not as a recommendation for final logging boundaries.
 
 ---
 
@@ -139,11 +148,16 @@ rather than forcing the SIEM to reconstruct behavioral state from raw logs.
 | Fewer than 5 failures within 30 seconds | LOW |
 | 5 or more failures within 30 seconds | HIGH |
 
-The resulting `auth_level` is embedded directly in the security log entry
-and serves as a primary detection signal for downstream analysis.
+The threshold values (5 attempts within 30 seconds)
+were intentionally chosen as conservative demonstration parameters
+to illustrate behavioral escalation.
 
-This approach deliberately avoids time-window correlation logic at the SIEM layer,
-reducing complexity and false positives.
+These values are not intended to represent a universal brute-force definition
+and must be adaptive in production environments.
+
+Thresholds are expected to be externally tunable
+and environment-specific.
+
 
 ---
 
@@ -293,22 +307,42 @@ The current implementation has the following known limitations:
 - No correlation with reverse proxy, WAF, or CDN telemetry
 - No automated active response or blocking configured
 - Limited contextual enrichment (e.g., User-Agent, GeoIP)
+- Behavioral classification (auth_level) is currently computed
+  at the application layer rather than the SIEM layer
 
 These constraints were accepted intentionally
-to prioritize detection clarity and reduce false positives
-during initial implementation.
+to prioritize detection clarity, reproducibility,
+and signal determinism during initial implementation,
+while acknowledging that this approach is not
+a long-term architectural endpoint.
 
 ---
 
 ### 9.2 Planned Extensions
 
+The initial implementation resets IP-based failure counters
+upon successful authentication.
+
+While intuitive from an application development perspective,
+this behavior may enable evasion techniques
+in which attackers interleave valid logins
+to suppress behavioral thresholds.
+
+Future iterations will replace this logic
+with time-decay–based failure models
+and explicitly log "success-after-failure" events
+to preserve behavioral continuity for SOC analysis.
+
 Planned enhancements include:
 
-- **LD-02:** Cross-site scripting (XSS) detection using the same logging model
 - Correlation with upstream proxy or WAF logs
 - Risk-based alert escalation policies
 - Temporary IP blocking or rate-limiting via active response
 - Enrichment with threat intelligence and reputation data
+- Migration of behavioral correlation logic
+  from Action-level instrumentation
+  to request-boundary components
+  (e.g., Controller or Filter layer)
 
 The logging schema and detection logic were designed
 to be reusable across multiple web attack classes.
@@ -328,6 +362,20 @@ This approach enables proactive detection,
 improves analyst confidence,
 and establishes a scalable foundation
 for expanding web application attack detection coverage.
+
+This scenario prioritizes detection clarity,
+signal semantics, and operational reproducibility
+over architectural completeness.
+
+Certain design decisions, such as application-side
+behavioral classification, represent intentional trade-offs
+made under tooling and deployment constraints,
+rather than prescriptive production patterns.
+
+The implementation serves as a foundation
+for evolving toward request-boundary logging,
+SIEM-native correlation,
+and multi-layer detection architectures.
 
 ---
 
