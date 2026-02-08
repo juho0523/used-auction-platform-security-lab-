@@ -16,104 +16,124 @@
 <title>메인 : 게시글 정보</title>
 </head>
 <body>
-	<div id="project_container">
-		<div id=top>
-			<img src="./images/icon/arrow.png" onclick="history.back()">
-			<h1>상품정보</h1>
-			<img id="option" src="./images/icon/option.png">
-		</div>
-		<div id="container">
+<div id="project_container">
+	<div id="top">
+		<img src="./images/icon/arrow.png" onclick="history.back()">
+		<h1>상품정보</h1>
+		<img id="option" src="./images/icon/option.png">
+	</div>
 
-    <div id="myCarousel" class="carousel slide" data-bs-ride="carousel">
-        <div class="carousel-inner">
-            <div class="d-flex justify-content-center carousel-item active">
-                <img src="uploaded/${productInfo.getImgURL()}" class="d-block" alt="Image 1"
-				onerror="this.onerror=null; this.src='images/product/uploaded/logo.png'">
-            </div>
-        </div>
-    </div>
-			<div id="nickname">
-				<div id="nickname_img_container">
-					<img src="./images/icon/person.png">
-				</div>
-				<div id="nickname_container">
-					<p>${productInfo.getNickName()}</p>
-				</div>
-			</div>
-			<hr>
-			<div id="title_container">
-				<span id="title">${productInfo.getTitle()}</span> <span id="category">${productInfo.getCategory()}</span>
-			</div>
-			<hr>
-			<div id="price">
-				<span>${productInfo.getBidMax()}P</span> <span>즉시 구매가 ${productInfo.getPrice()}P</span>
-			</div>
-			<div id="product_state">
-				<span>입찰 ${productInfo.getBidCount()}건</span> <span id="end_date">${productInfo.getEndDate()}</span>
-			</div>
-			<hr>
-			<div id="content">
-				<span>${productInfo.getContent()}</span>
-			</div>
-		</div>
-		<div class="modal_default" id="bid_modal">
-			<div id="bid_modal_container">
-				<div id="bid_modal_top">얼마를 입찰 하시겠습니까?</div>
-				<div id="bid_modal_input_container">
-					<input name="bid_price" placeholder="0P">
-					<span>내 포인트: ${point}</span>
-				</div>
-				<div id="bid_modal_button_container">
-					<div id="add_bid">확인</div>
-					<div class="close">취소</div>
+	<div id="container">
+
+		<div id="myCarousel" class="carousel slide" data-bs-ride="carousel">
+			<div class="carousel-inner">
+				<div class="d-flex justify-content-center carousel-item active">
+					<img
+						src="uploaded/<c:out value='${productInfo.imgURL}'/>"
+						class="d-block"
+						alt="Image 1"
+						onerror="this.onerror=null; this.src='images/product/uploaded/logo.png'">
 				</div>
 			</div>
 		</div>
-		<div class="modal_default" id="buy_modal">
-			<div id="buy_modal_container">
-				<div id="buy_modal_top">즉시 구매 하시겠습니까?</div>
-				<div id="buy_modal_input_container">
-					<p>즉시 구매가 ${productInfo.getPrice()}P</p>
-					<span>내 포인트: ${point}</span>
-				</div>
-				<div id="buy_modal_button_container">
-					<div id="buy">확인</div>
-					<div class="close">취소</div>
-				</div>
+
+		<div id="nickname">
+			<div id="nickname_img_container">
+				<img src="./images/icon/person.png">
+			</div>
+			<div id="nickname_container">
+				<p><c:out value="${productInfo.nickName}"/></p>
 			</div>
 		</div>
-		<div class="modal_default" id="option_modal">
-			<div class="option_button" id="chat">1:1 채팅</div>
-			<div class="option_button" id="report_button">신고하기</div>
+
+		<hr>
+
+		<div id="title_container">
+			<span id="title"><c:out value="${productInfo.title}"/></span>
+			<span id="category"><c:out value="${productInfo.category}"/></span>
 		</div>
-		<div class="modal_default" id="report_modal">
-			<div id="report_modal_container">
-				<div id="report_modal_top">신고사유</div>
-				<textarea id="report_content" name="content" placeholder="신고 내용을 입력해주세요."></textarea>
-				<div id="report_modal_button_container">
-					<div id="report_close">취소</div>
-					<div id="add_report">접수</div>
-				</div>
+
+		<hr>
+
+		<div id="price">
+			<span><c:out value="${productInfo.bidMax}"/>P</span>
+			<span>즉시 구매가 <c:out value="${productInfo.price}"/>P</span>
+		</div>
+
+		<div id="product_state">
+			<span>입찰 <c:out value="${productInfo.bidCount}"/>건</span>
+			<span id="end_date"><c:out value="${productInfo.endDate}"/></span>
+		</div>
+
+		<hr>
+
+		<div id="content">
+			<span><c:out value="${productInfo.content}"/></span>
+		</div>
+
+	</div>
+
+	<div class="modal_default" id="bid_modal">
+		<div id="bid_modal_container">
+			<div id="bid_modal_top">얼마를 입찰 하시겠습니까?</div>
+			<div id="bid_modal_input_container">
+				<input name="bid_price" placeholder="0P">
+				<span>내 포인트: <c:out value="${point}"/></span>
+			</div>
+			<div id="bid_modal_button_container">
+				<div id="add_bid">확인</div>
+				<div class="close">취소</div>
 			</div>
 		</div>
-		<div id="bottom">
-			<div id="button">
-				<div id="bid_button">입찰</div>
-				<div id="buy_button">즉시 구매</div>
+	</div>
+
+	<div class="modal_default" id="buy_modal">
+		<div id="buy_modal_container">
+			<div id="buy_modal_top">즉시 구매 하시겠습니까?</div>
+			<div id="buy_modal_input_container">
+				<p>즉시 구매가 <c:out value="${productInfo.price}"/>P</p>
+				<span>내 포인트: <c:out value="${point}"/></span>
 			</div>
-			<jsp:include page="/navbar_home.jsp"></jsp:include>
-	
+			<div id="buy_modal_button_container">
+				<div id="buy">확인</div>
+				<div class="close">취소</div>
+			</div>
 		</div>
+	</div>
+
+	<div class="modal_default" id="option_modal">
+		<div class="option_button" id="chat">1:1 채팅</div>
+		<div class="option_button" id="report_button">신고하기</div>
+	</div>
+
+	<div class="modal_default" id="report_modal">
+		<div id="report_modal_container">
+			<div id="report_modal_top">신고사유</div>
+			<textarea id="report_content" name="content" placeholder="신고 내용을 입력해주세요."></textarea>
+			<div id="report_modal_button_container">
+				<div id="report_close">취소</div>
+				<div id="add_report">접수</div>
+			</div>
 		</div>
+	</div>
+
+	<div id="bottom">
+		<div id="button">
+			<div id="bid_button">입찰</div>
+			<div id="buy_button">즉시 구매</div>
+		</div>
+		<jsp:include page="/navbar_home.jsp"/>
+	</div>
+</div>
 	<script type="text/javascript">
-	var startPrice = ${productInfo.getStartPrice()};
-	var bidMax = ${productInfo.getBidMax()};
-	var myPoint = ${point};
-	var price = ${productInfo.getPrice()};
+	var startPrice = "${productInfo.getStartPrice()}";
+	var bidMax = "${productInfo.getBidMax()}";
+	var myPoint = "${point}";
+	var price = "${productInfo.getPrice()}";
 	var sellerNickName = "${productInfo.getNickName()}";
 	var myNickName = "${nickName}";
 	var productState = "${productInfo.getState()}";
-	var productSeq = ${productInfo.getProductSeq()};
+	var productSeq = "${productInfo.getProductSeq()}";
 	var sellerId = "${productInfo.getId()}";
 	var myId = "${userId}"
 	var endDateStr = $("#end_date").text().split('T');

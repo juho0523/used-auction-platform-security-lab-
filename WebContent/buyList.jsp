@@ -88,77 +88,97 @@
 
 <body>
 
-	<div id="project_container">
-		<div id="top">
-			<h6 id="top-head">구매내역</h6>
-			<div></div>
-		</div>
-
-    <div class="button">
-      <button id="selling" class="btn btn-primary rounded-pill">구매중</button>
-      <button id="sellComplete" class="btn btn-primary rounded-pill">구매종료</button>
-    </div>
-
-		<div class="container" id="buyList">
-			<hr class="my-1">
-			
-        <c:if test="${empty buyList}">
-        <div class="card d-flex align-items-center border-0 mt-5 pt-5">
-          <img src="./images/product/uploaded/logo.png" class="logo">
-          <div class="card-body">
-              <p class="card-text">구매 내역이 없습니다.</</p>
-          </div>
-        </div>
-        </c:if>			
-			
-			<ul class="list-group w-100">
-				
-				<% if(buyList != null){ %>
-        <% for(int i=0; i<buyList.size(); i++){ %>
-        <div class="d-flex product_card" data-productSeq="<%= buyList.get(i).getProductSeq() %>">
-          <img src="uploaded/<%= buyList.get(i).getImgURL() %>" 
-            alt="상품이미지" onerror="this.onerror=null; this.src='images/product/uploaded/logo.png'"
-            class="img-fluid">
-          <div class="ms-1">
-            <div class="card-text d-flex">
-              <div id="item-title-group">
-                <div class="d-flex product_title">
-                  <h6 class="truncate"><%= buyList.get(i).getTitle() %></h6>
-                  <% if(buyList.get(i).getState().equals("S")){ %>
-                  <span class="badge badge-s">판매중</span>
-                  <% } else if(buyList.get(i).getState().equals("T")) {  %>
-                  <span class="badge bg-info">거래중</span>
-                  <% } %>
-                </div>
-                <p><%= buyList.get(i).getCategory() %></p>
-                <p class="end_date"><%= buyList.get(i).getAddress() %>
-                  | 종료일
-                  <%= buyList.get(i).getEndDate() %></p>
-                <span class="badge badge-s">입찰가</span> 
-                <% if(buyList.get(i).getBidMax() == 0){ %>
-                <span><%= buyList.get(i).getStartPrice() %>P</span> 
-                <% } else {%>
-                <span><%= buyList.get(i).getBidMax() %>P</span> 
-                <% } %>
-                <span class="badge badge-s">즉구가</span> 
-                <span><%= buyList.get(i).getPrice() %>P</span>
-                <span>입찰 <%= buyList.get(i).getBidCount() %>건
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-        <hr class="my-1">
-        <% } %>
-				<% } %>
-				
-			</ul>
-			
-
-			
-		</div>
-		<jsp:include page="/navbar_buy.jsp"></jsp:include>
+<div id="project_container">
+	<div id="top">
+		<h6 id="top-head">구매내역</h6>
+		<div></div>
 	</div>
+
+	<div class="button">
+		<button id="selling" class="btn btn-primary rounded-pill">구매중</button>
+		<button id="sellComplete" class="btn btn-primary rounded-pill">구매종료</button>
+	</div>
+
+	<div class="container" id="buyList">
+		<hr class="my-1">
+
+		<c:if test="${empty buyList}">
+			<div class="card d-flex align-items-center border-0 mt-5 pt-5">
+				<img src="./images/product/uploaded/logo.png" class="logo">
+				<div class="card-body">
+					<p class="card-text">구매 내역이 없습니다.</p>
+				</div>
+			</div>
+		</c:if>
+
+		<ul class="list-group w-100">
+
+			<c:forEach var="item" items="${buyList}">
+				<div class="d-flex product_card"
+					 data-productSeq="${item.productSeq}">
+
+					<img src="uploaded/<c:out value='${item.imgURL}'/>"
+						 alt="상품이미지"
+						 onerror="this.onerror=null; this.src='images/product/uploaded/logo.png'"
+						 class="img-fluid">
+
+					<div class="ms-1">
+						<div class="card-text d-flex">
+							<div id="item-title-group">
+
+								<div class="d-flex product_title">
+									<h6 class="truncate">
+										<c:out value="${item.title}"/>
+									</h6>
+
+									<c:choose>
+										<c:when test="${item.state eq 'S'}">
+											<span class="badge badge-s">판매중</span>
+										</c:when>
+										<c:when test="${item.state eq 'T'}">
+											<span class="badge bg-info">거래중</span>
+										</c:when>
+									</c:choose>
+								</div>
+
+								<p>
+									<c:out value="${item.category}"/>
+								</p>
+
+								<p class="end_date">
+									<c:out value="${item.address}"/>
+									| 종료일
+									<c:out value="${item.endDate}"/>
+								</p>
+
+								<span class="badge badge-s">입찰가</span>
+								<c:choose>
+									<c:when test="${item.bidMax == 0}">
+										<span><c:out value="${item.startPrice}"/>P</span>
+									</c:when>
+									<c:otherwise>
+										<span><c:out value="${item.bidMax}"/>P</span>
+									</c:otherwise>
+								</c:choose>
+
+								<span class="badge badge-s">즉구가</span>
+								<span><c:out value="${item.price}"/>P</span>
+
+								<span>
+									입찰 <c:out value="${item.bidCount}"/>건
+								</span>
+							</div>
+						</div>
+					</div>
+				</div>
+				<hr class="my-1">
+			</c:forEach>
+
+		</ul>
+	</div>
+
+	<jsp:include page="/navbar_buy.jsp"/>
+</div>
 	
       <div class="modal fade" id="exampleModal" tabindex="-1"
         aria-labelledby="exampleModalLabel" aria-hidden="true">

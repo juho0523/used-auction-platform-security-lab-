@@ -48,71 +48,88 @@
 </style>
 <body>
 
-	<div id="project_container">
-		<div id="top">
-			<h6 id="top-head">판매내역</h6>
-			<div></div>
-		</div>
+<div id="project_container">
+	<div id="top">
+		<h6 id="top-head">판매내역</h6>
+		<div></div>
+	</div>
 
-		<div class="button">
-			<button id="selling" class="btn btn-primary rounded-pill">판매중</button>
-			<button id="sellComplete" class="btn btn-primary rounded-pill">판매종료</button>
-		</div>
-		<div class="container" id="scroll">
-			<hr class="my-1">
-			
-			<c:if test="${empty sellList}">
+	<div class="button">
+		<button id="selling" class="btn btn-primary rounded-pill">판매중</button>
+		<button id="sellComplete" class="btn btn-primary rounded-pill">판매종료</button>
+	</div>
+
+	<div class="container" id="scroll">
+		<hr class="my-1">
+
+		<c:if test="${empty sellList}">
 			<div class="card d-flex align-items-center border-0 mt-5 pt-5">
 				<img src="./images/product/uploaded/logo.png" class="logo">
-		 		<div class="card-body">
-		    		<p class="card-text">판매 내역이 없습니다.</</p>
-		 		</div>
+				<div class="card-body">
+					<p class="card-text">판매 내역이 없습니다.</p>
+				</div>
 			</div>
-			</c:if>
-			
-			
-			<ul class="list-group w-100">
-				<li class="list-group-item border-0 p-0">
-					<% if(sellList != null){ %>
-					<% for(int i=0; i<sellList.size(); i++){ %>
-					<div class="d-flex product_card" data-productSeq="<%= sellList.get(i).getProductSeq() %>">
-						<img src="uploaded/<%= sellList.get(i).getImgURL() %>" 
-						alt="상품이미지" onerror="this.onerror=null; this.src='images/product/uploaded/logo.png'"
-						class="img-fluid">
+		</c:if>
+
+		<ul class="list-group w-100">
+			<li class="list-group-item border-0 p-0">
+				<c:forEach var="item" items="${sellList}">
+					<div class="d-flex product_card" data-productSeq="${item.productSeq}">
+						<img src="uploaded/<c:out value='${item.imgURL}'/>"
+							 alt="상품이미지"
+							 onerror="this.onerror=null; this.src='images/product/uploaded/logo.png'"
+							 class="img-fluid">
+
 						<div class="ms-1">
 							<div class="card-text d-flex">
 								<div id="item-title-group">
 									<div class="d-flex product_title">
-										<h6 class="truncate"><%= sellList.get(i).getTitle() %></h6>
-										<% if(sellList.get(i).getState().equals("S")){ %>
-										<span class="badge badge-s">판매중</span>
-										<% } else if(sellList.get(i).getState().equals("T")) {  %>
-										<span class="badge badge-t">거래중</span>
-										<% } %>
+										<h6 class="truncate">
+											<c:out value="${item.title}"/>
+										</h6>
+
+										<c:choose>
+											<c:when test="${item.state eq 'S'}">
+												<span class="badge badge-s">판매중</span>
+											</c:when>
+											<c:when test="${item.state eq 'T'}">
+												<span class="badge badge-t">거래중</span>
+											</c:when>
+										</c:choose>
 									</div>
-									<p><%= sellList.get(i).getCategory() %></p>
-									<p class="end_date"><%= sellList.get(i).getAddress() %> | 종료일 <%= sellList.get(i).getEndDate() %></p>
-									<span class="badge badge-s">입찰가</span> 
-									<% if(sellList.get(i).getBidMax() == 0){ %>
-									<span><%= sellList.get(i).getStartPrice() %>P</span> 
-									<% } else {%>
-									<span><%= sellList.get(i).getBidMax() %>P</span> 
-									<% } %>
-									<span class="badge badge-s">즉구가</span> 
-									<span><%= sellList.get(i).getPrice() %>P</span> 
-									<span>입찰 <%= sellList.get(i).getBidCount() %>건</span>
+
+									<p><c:out value="${item.category}"/></p>
+									<p class="end_date">
+										<c:out value="${item.address}"/> | 종료일
+										<c:out value="${item.endDate}"/>
+									</p>
+
+									<span class="badge badge-s">입찰가</span>
+									<c:choose>
+										<c:when test="${item.bidMax == 0}">
+											<span><c:out value="${item.startPrice}"/>P</span>
+										</c:when>
+										<c:otherwise>
+											<span><c:out value="${item.bidMax}"/>P</span>
+										</c:otherwise>
+									</c:choose>
+
+									<span class="badge badge-s">즉구가</span>
+									<span><c:out value="${item.price}"/>P</span>
+									<span>입찰 <c:out value="${item.bidCount}"/>건</span>
 								</div>
 							</div>
 						</div>
-					</div>						
+					</div>
 					<hr class="my-1">
-					<% } %>
-					<% } %>
-				</li>
-			</ul>
-		</div>
-		<jsp:include page="/navbar_sell.jsp"></jsp:include>
+				</c:forEach>
+			</li>
+		</ul>
 	</div>
+
+	<jsp:include page="/navbar_sell.jsp"/>
+</div>
+
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
