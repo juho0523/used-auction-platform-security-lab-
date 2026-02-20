@@ -161,6 +161,7 @@ if(userId.equals(request.getParameter("toId")))
 var productSeq = "${param.productSeq}";
 var fromId = "${sessionScope.userId}";
 var toId = "${param.toId}";
+var csrfToken = "${csrfToken}";
 
 $("#sendBtn").on("click", function(){
     var chatContent = $("#chatContent").val();
@@ -169,18 +170,26 @@ $("#sendBtn").on("click", function(){
         return;
     }
 
-    $.post("controller?cmd=addChatAction", {
-        productSeq: productSeq,
-        fromId: fromId,
-        toId: toId,
-        chatContent: chatContent
-    }, function(){
-        $("#chatContent").val("");
+    $.ajax({
+        url: "controller?cmd=addChatAction",
+        type: "POST",
+        headers: {
+            "X-CSRF-Token": csrfToken
+        },
+        data: {
+            productSeq: productSeq,
+            fromId: fromId,
+            toId: toId,
+            chatContent: chatContent
+        },
+        success: function(){
+            $("#chatContent").val("");
+        }
     });
 });
 
 function getChat(){
-    $.post("controller?cmd=getChatAction", {
+    $.get("controller?cmd=getChatAction", {
         productSeq: productSeq,
         fromId: fromId,
         toId: toId

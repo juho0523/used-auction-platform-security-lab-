@@ -34,7 +34,7 @@ public class CsrfFilter implements Filter {
         HttpSession session = req.getSession(false);
 
         // 로그인 사용자만 보호
-        if (session == null || session.getAttribute("user") == null) {
+        if (session == null || session.getAttribute("userId") == null) {
             chain.doFilter(request, response);
             return;
         }
