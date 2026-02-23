@@ -31,8 +31,12 @@
 		<h1>상품등록</h1>
 	</div>
 	<div id="container">
-		<form action="controller?cmd=addProductAction" method="post" encType="multipart/form-data" onsubmit = "return addSubmit()">
-		<div id="img_list_container">
+		<form id="addForm" action="controller?cmd=addProductAction"
+      method="post"
+      encType="multipart/form-data"
+      onsubmit="return addSubmit()">
+
+    <input type="hidden" name="csrfToken" value="${csrfToken}"><div id="img_list_container">
 			<div class="img_container">
 				<label for="input_file">
 					<img id="camera" src="./images/icon/camera.png">
@@ -117,6 +121,27 @@
 	<jsp:include page="/navbar_home.jsp"></jsp:include>
 </div>
 <script>
+	const csrfToken = '${csrfToken}';
+	$("#addForm").on("submit", function(e){
+    e.preventDefault();
+
+    const formData = new FormData(this);
+
+    fetch(this.action, {
+        method: "POST",
+        headers: {
+            "X-CSRF-Token": csrfToken
+        },
+        body: formData
+    }).then(res => {
+        if(res.ok) {
+            location.href = "controller?cmd=mainUI";
+        } else {
+            alert("403 발생");
+        }
+    });
+});
+
 	var userAddress = "${address}";
 	$(document).ready(function(){
 		$("#regionBtn").text("${address}");

@@ -31,33 +31,38 @@ public class CsrfFilter implements Filter {
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse res = (HttpServletResponse) response;
 
-        HttpSession session = req.getSession(false);
-
-        // 로그인 사용자만 보호
-        if (session == null || session.getAttribute("userId") == null) {
-            chain.doFilter(request, response);
-            return;
-        }
+        HttpSession session = req.getSession(true);
 
         String method = req.getMethod();
 
-        // 상태 변경 요청만 검증
-        if (isStateChangingMethod(method)) {
+// 로그인 사용자만 보호
+if (session.getAttribute("userId") != null) {
 
-            String sessionToken = (String) session.getAttribute(CSRF_TOKEN);
-            String requestToken = extractToken(req);
-
-            if (sessionToken == null || requestToken == null || 
-                !sessionToken.equals(requestToken)) {
-
-                logAttackAttempt(req);
-                res.sendError(HttpServletResponse.SC_FORBIDDEN, "CSRF validation failed");
-                return;
-            }
-
-            // 🔥 1회성 토큰 → 재생성
+    // GET이면 먼저 토큰 생성
+    if ("GET".equalsIgnoreCase(method)) {
+        if (session.getAttribute(CSRF_TOKEN) == null) {
             session.setAttribute(CSRF_TOKEN, generateToken());
         }
+    }
+
+    // 상태 변경 요청 검증
+    if (isStateChangingMethod(method)) {
+
+        String sessionToken = (String) session.getAttribute(CSRF_TOKEN);
+        String requestToken = extractToken(req);
+
+        if (sessionToken == null ||
+            requestToken == null ||
+            !sessionToken.equals(requestToken)) {
+
+            logAttackAttempt(req);
+            res.sendError(HttpServletResponse.SC_FORBIDDEN, "CSRF validation failed");
+            return;
+        }
+    }
+
+    req.setAttribute("csrfToken", session.getAttribute(CSRF_TOKEN));
+}
 
         // GET 요청 시 토큰 없으면 생성
         if ("GET".equalsIgnoreCase(method)) {
