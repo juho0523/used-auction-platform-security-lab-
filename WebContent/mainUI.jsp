@@ -192,9 +192,15 @@
 </div>
 
 	<script>
-	
-		// 색변경
-		var userAddress = "${address}";
+    const csrfToken = '${csrfToken}';
+
+    $(document).ajaxSend(function (event, xhr, settings) {
+        if (settings.type === "POST") {
+            xhr.setRequestHeader("X-CSRF-Token", csrfToken);
+        }
+    });
+
+    var userAddress = "${address}";
 		$("#regionBtn").text(userAddress);
 		$("#region div > a").removeClass("active");
 		$("#region div > a").css("background-color", "transparent");
