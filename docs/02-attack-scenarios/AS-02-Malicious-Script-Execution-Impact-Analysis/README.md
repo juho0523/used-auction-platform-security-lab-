@@ -66,18 +66,38 @@ This assessment evaluates whether that assumption remains valid when arbitrary s
 
 ## 4. Validation Activity
 
-A controlled test was conducted to determine whether user-supplied content could trigger client-side script execution.
+Validation was conducted within a fully controlled local development environment.
 
-Test payload inserted into user content:
+Environment characteristics:
+
+- Application deployed on local server instance
+- No external network exposure
+- Isolated test database
+- Single test user account
+- No production data involved
+
+The objective was to verify whether user-supplied content could result in client-side script execution when rendered by the JSP presentation layer.
+
+Test payload inserted into user-generated content:
 
 ```html
 <script>alert("test")</script>
 ```
 
-The payload was stored in the database and rendered through a JSP page responsible for displaying chat messages.
+The payload was stored in the database and subsequently rendered through the JSP page responsible for displaying chat messages.
 
-Testing was strictly limited to execution validation.
-No data exfiltration or privilege abuse was performed.
+Upon page load in the local browser session, the script executed successfully.
+
+The purpose of this validation was limited to confirming execution capability under controlled conditions.
+
+No attempt was made to:
+
+- Extract sensitive data
+- Manipulate application state
+- Escalate privileges
+- Simulate real-world exploitation chains
+
+The activity was strictly limited to architectural behavior verification within an isolated environment.
 
 ---
 
