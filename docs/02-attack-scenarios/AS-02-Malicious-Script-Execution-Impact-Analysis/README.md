@@ -1,28 +1,30 @@
-### AS-02: Malicious Script Execution and Request Integrity Assessment
+### AS-02: Malicious Script Execution and Request Integrity Compromise Assessment
 
 ---
 
-### 1. Executive Summary
+## 1. Executive Summary
 
-This assessment evaluates the security impact of malicious script execution within a legacy JSP/Servlet-based web application.
+This assessment evaluates the security implications of malicious client-side script execution within a legacy JSP/Servlet-based web application.
 
-The objective is to analyze how arbitrary client-side script execution affects:
+Testing confirmed that user-controlled content is rendered without output encoding, allowing arbitrary JavaScript execution within the trusted application origin.
 
-- Request authenticity assumptions
+This issue extends beyond a client-side rendering flaw.  
+It represents a breakdown in presentation-layer trust controls and undermines architectural assumptions regarding:
+
+- Request authenticity
 - Session trust boundaries
-- CSRF exposure
-- Privilege misuse risk
-- Monitoring visibility
+- Authorization integrity
+- Audit reliability
 
-Testing confirmed that user-controlled content can be rendered in a way that allows script execution within the trusted application origin.
+Because malicious code executes within an authenticated browser context, the application can no longer safely assume that authenticated requests reflect intentional user actions.
 
-This finding has implications beyond client-side behavior and impacts overall request integrity guarantees.
+From a governance perspective, this finding indicates insufficient enforcement of output encoding standards and absence of defense-in-depth mechanisms at the browser boundary.
 
-Remediation will be implemented in LD-02.
+Remediation is required to restore request integrity guarantees.
 
 ---
 
-### 2. Assessment Scope
+## 2. Assessment Scope
 
 | Item | Description |
 |------|------------|
@@ -32,39 +34,87 @@ Remediation will be implemented in LD-02.
 | Session Model | Cookie-based session (JSESSIONID) |
 | CSRF Controls | Not implemented |
 | CSP | Not implemented |
+| Logging | Basic access logging only |
+| Security Telemetry | Not implemented |
 
 ---
 
-### 3. Validation Activity
+## 3. Threat Model
 
-A controlled test was conducted to determine whether user-supplied content could result in client-side script execution.
+### 3.1 Attacker Capability Assumptions
 
-Test payload inserted into user content:
+- Ability to submit user-generated content
+- No server-side access
+- No authentication bypass
+- No network interception capability
+- Operates as a normal authenticated or unauthenticated user
+
+### 3.2 Trust Boundaries Evaluated
+
+- Browser execution context
+- Session cookie boundary
+- Same-origin policy enforcement
+- Application request authenticity assumption
+
+### 3.3 Security Assumption Under Test
+
+> "Authenticated session requests represent intentional user actions."
+
+This assessment evaluates whether that assumption remains valid when arbitrary script execution is possible within the trusted origin.
+
+---
+
+## 4. Validation Activity
+
+Validation was conducted within a fully controlled local development environment.
+
+Environment characteristics:
+
+- Application deployed on local server instance
+- No external network exposure
+- Isolated test database
+- Single test user account
+- No production data involved
+
+The objective was to verify whether user-supplied content could result in client-side script execution when rendered by the JSP presentation layer.
+
+Test payload inserted into user-generated content:
 
 ```html
 <script>alert("test")</script>
 ```
 
-The content was stored in the database and rendered through a JSP page responsible for displaying chat messages.
+The payload was stored in the database and subsequently rendered through the JSP page responsible for displaying chat messages.
+
+Upon page load in the local browser session, the script executed successfully.
+
+The purpose of this validation was limited to confirming execution capability under controlled conditions.
+
+No attempt was made to:
+
+- Extract sensitive data
+- Manipulate application state
+- Escalate privileges
+- Simulate real-world exploitation chains
+
+The activity was strictly limited to architectural behavior verification within an isolated environment.
 
 ---
 
-### 4. Observed Behavior
+## 5. Observed Behavior
 
 Upon page load:
 
-- The script executed in the browser.
+- The script executed successfully.
 - No output encoding was applied.
-- The content was interpreted as executable JavaScript.
+- The browser interpreted stored content as executable JavaScript.
+- Execution occurred within the application’s trusted origin.
 
-This confirms that malicious script execution is currently possible within the trusted origin.
-
-Testing was limited strictly to execution validation.
-No data extraction or privilege abuse was performed.
+This confirms that malicious script execution is currently possible.
 
 ---
 
-### 5. Root Cause Analysis
+## 6. Root Cause Analysis
 
 The affected JSP page renders database content directly:
 
@@ -74,135 +124,214 @@ ${chatContent}
 
 Because no output encoding mechanism is applied:
 
-- HTML is interpreted as markup
-- JavaScript executes
-- The browser treats stored content as trusted code
+- HTML markup is interpreted
+- Embedded JavaScript executes
+- Stored user content becomes executable code
 
-The absence of presentation-layer encoding allows execution within the application origin.
+There is no:
+
+- Context-aware encoding
+- Content Security Policy (CSP)
+- Script execution restriction
+- Centralized output sanitization layer
+
+The absence of presentation-layer encoding allows execution inside the authenticated origin context.
 
 ---
 
-### 6. Security Impact Assessment
+## 7. Attack Chain Analysis
 
-Malicious script execution has broader architectural implications.
+The vulnerability enables the following attack sequence:
 
-#### 6.1 Request Integrity Degradation
+1. Attacker submits script payload.
+2. Payload is stored without encoding.
+3. Victim loads the affected page.
+4. Script executes within the trusted origin.
+5. Script programmatically issues authenticated POST requests.
+6. Server processes requests as legitimate user activity.
+
+Importantly:
+
+- The exploit does not require session theft.
+- It does not require cross-origin interaction.
+- It leverages implicit trust in browser-executed authenticated requests.
+
+This transforms the victim’s browser into an authenticated request proxy.
+
+---
+
+## 8. Security Impact Assessment
+
+### 8.1 Request Integrity Degradation
 
 The application assumes:
 
-> Authenticated session = intentional user request
+> Authenticated session = intentional user action
 
-However, if script execution occurs within the origin:
+Malicious script execution invalidates this assumption.
 
-- Authenticated POST requests can be programmatically triggered
-- State-changing endpoints can be invoked
-- Business logic flows can be manipulated
+Because execution occurs inside the same origin:
+
+- Session cookies are automatically attached.
+- Requests pass origin validation.
+- Server-side logic cannot distinguish automation from user intent.
 
 Authentication does not guarantee user intent.
 
 ---
 
-#### 6.2 CSRF Exposure Amplification
+### 8.2 CSRF Exposure Amplification
 
-CSRF relies on browser session behavior.
+Traditional CSRF relies on cross-origin request submission.
 
-If malicious script executes within the trusted origin:
+Malicious script execution differs:
 
-- The browser automatically attaches session cookies
-- Requests appear legitimate
-- Origin validation remains valid
+- It operates within the same origin context.
+- It bypasses origin-based validation entirely.
+- It eliminates reliance on cross-site request mechanics.
 
-Therefore, malicious script execution increases exposure to CSRF-style request forgery.
+This increases exposure to unauthorized state-changing operations.
 
-This does not imply automatic compromise,
-but it significantly weakens request authenticity controls.
-
----
-
-#### 6.3 Privilege Misuse Risk
-
-If higher-privileged users view injected content:
-
-- Elevated endpoints may be invoked
-- Administrative functions may be triggered
-- Workflow integrity may degrade
-
-Impact severity depends on privilege level.
+While this does not automatically imply compromise, it significantly weakens request authenticity controls.
 
 ---
 
-#### 6.4 Detection Visibility Gap
+### 8.3 Privilege Misuse Risk
+
+If injected content is viewed by higher-privileged users:
+
+- Administrative endpoints may be invoked
+- Sensitive configuration changes may occur
+- Elevated workflows may be triggered
+
+Impact severity increases proportionally with privilege level.
+
+---
+
+### 8.4 Confidentiality and Integrity Impact (CIA Mapping)
+
+| Domain | Potential Impact |
+|--------|------------------|
+| Confidentiality | Script-based data extraction |
+| Integrity | Unauthorized state modification |
+| Availability | Automated abuse or resource exhaustion |
+| Accountability | Ambiguous audit trails |
+
+---
+
+### 8.5 Monitoring and Detection Blind Spot
 
 Example access log entry:
 
-```log
-127.0.0.1 - - [14/Feb/2026:11:03:42 +0900] "POST /used-auction-platform/controller?cmd=addChatAction HTTP/1.1" 200 512
+```
+127.0.0.1 - - [14/Feb/2026:11:03:42 +0900] "POST /controller?cmd=addChatAction HTTP/1.1" 200 512
 ```
 
 Limitations:
 
-- No indication of script-triggered activity
+- No indication of script-triggered automation
+- No intent validation
 - No payload inspection
-- No intent validation logging
-- No anomaly detection
+- No behavioral anomaly detection
 
-From a SOC perspective, malicious script-triggered requests are indistinguishable from legitimate traffic.
+Because requests originate from legitimate sessions:
 
----
+- WAF signature-based detection may not trigger
+- Access logs appear normal
+- SOC visibility is limited
 
-### 7. Architectural Observation
-
-Current security posture reflects:
-
-- Over-reliance on client-side trust
-- Lack of output encoding enforcement
-- Absence of browser-level controls (CSP)
-- No structured security telemetry
-
-The trust boundary between rendered content and executable context is insufficiently enforced.
+This represents an observability failure rather than merely an input validation issue.
 
 ---
 
-### 8. Risk Evaluation
+## 9. Architectural Maturity Observation
+
+The application currently lacks:
+
+- A defined output encoding policy
+- Centralized presentation-layer security controls
+- CSP enforcement
+- CSRF token enforcement
+- Structured security telemetry
+
+Security posture appears dependent on developer discipline rather than policy-enforced control layers.
+
+This increases systemic variance risk.
+
+---
+
+## 10. Risk Evaluation
 
 | Risk Category | Likelihood | Impact | Risk Level |
 |--------------|-----------|--------|------------|
 | Malicious Script Execution | Medium | High | High |
 | Request Integrity Breakdown | Medium | High | High |
-| CSRF Exposure Increase | Medium | Medium–High | Medium–High |
+| Privilege Misuse | Medium | High | High |
 | Monitoring Blind Spot | High | Medium | High |
 
-Risk prioritization indicates remediation is required.
+Overall risk posture: Elevated  
+Remediation required.
 
 ---
 
-### 9. Planned Hardening (AS-03)
+## 11. Control & Compliance Mapping
 
-The following controls are planned:
+### Impacted Control Domains
 
-- Context-aware output encoding
-- Content Security Policy (CSP)
-- CSRF protection mechanisms
-- SameSite cookie configuration
-- Structured security logging
+- Secure Coding Policy
+- Output Encoding Standards
+- Application Security Testing
+- Browser Security Hardening
+- Logging and Monitoring Controls
 
-Implementation and validation results will be documented in AS-03.
+### Framework Alignment
+
+- OWASP ASVS 5.3 – Output Encoding
+- OWASP ASVS 3.4 – CSRF Protection
+- ISO 27001 A.14 – Secure Development
+- NIST SP 800-53 SI-10 – Information Input Validation
 
 ---
 
-### 10. Conclusion
+## 12. Planned Hardening (LD-02)
+
+Remediation Priority Order:
+
+1. Immediate  
+   - Context-aware output encoding
+   - JSTL `<c:out>` or equivalent encoding enforcement
+
+2. Short-Term  
+   - CSRF token validation implementation
+   - SameSite cookie configuration
+
+3. Mid-Term  
+   - Content Security Policy (report-only → enforce)
+   - Inline script restriction
+
+4. Strategic  
+   - Structured security logging
+   - Privilege-sensitive endpoint monitoring
+   - Session behavior anomaly detection
+
+Implementation validation results will be documented in 03-logging-and-detection/LD-02.
+
+---
+
+## 13. Conclusion
 
 This assessment confirms that malicious script execution is currently possible within the application.
 
-The impact extends beyond client-side behavior and affects:
+The impact extends beyond client-side rendering and affects:
 
 - Request authenticity
 - CSRF exposure
 - Privilege integrity
 - Monitoring visibility
+- Governance compliance alignment
 
 Preventing malicious script execution is foundational to maintaining trustworthy authenticated interactions.
 
-Hardening efforts will follow in the next phase.
+Hardening measures must be implemented to restore integrity guarantees at the presentation layer and browser trust boundary.
 
 ---
