@@ -77,9 +77,9 @@ public class CsrfFilter implements Filter {
             "method=%s " +
             "uri=%s " +
             "reason=%s " +
-            "fail_count=%d " +
-            "risk_score=%d " +
-            "risk_level=%s " +
+            "csrf_fail_count=%d " +
+            "csrf_risk_score=%d " +
+            "csrf_risk_level=%s " +
             "referer=%s",
             req.getRemoteAddr(),
             user,
