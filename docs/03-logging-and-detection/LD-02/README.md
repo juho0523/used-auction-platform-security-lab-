@@ -5,6 +5,8 @@
 
 # 1. Background
 
+> This project was implemented and validated within a controlled local laboratory environment, designed to simulate production-grade threat conditions and architectural decision-making.
+
 This project documents defensive hardening performed after identifying
 request integrity weaknesses and stored script execution exposure
 in assessment:
@@ -23,7 +25,40 @@ and introduces behavior-aware detection logic.
 
 ---
 
-# 2. Security Objectives
+# 2. Threat Model
+
+## 2.1 Assumed Adversary Capabilities
+
+The adversary is assumed to:
+
+- Craft arbitrary HTTP requests
+- Host malicious external HTML pages
+- Induce authenticated user interaction
+- Replay or automate request attempts
+- Manipulate client-side input
+
+Server-side compromise is not assumed.
+
+## 2.2 Trust Boundaries
+
+Identified trust boundaries:
+
+- Client Browser ↔ Web Application
+- Application Layer ↔ Session Store
+- Application Logs ↔ SIEM Pipeline
+
+Security controls are enforced at the first trust boundary (Servlet Filter layer).
+
+## 2.3 Primary Attack Scenarios
+
+1. Cross-Site Request Forgery (CSRF)
+2. Stored Script Injection (XSS)
+3. Automated CSRF retry abuse
+4. Session riding attempts
+
+---
+
+# 3. Security Objectives
 
 | Objective | Architectural Meaning |
 |------------|-----------------------|
@@ -35,7 +70,7 @@ and introduces behavior-aware detection logic.
 
 ---
 
-# 3. Hardened Architecture Overview
+# 4. Hardened Architecture Overview
 
 User Browser  
 ↓  
@@ -56,9 +91,9 @@ not inside business controllers, ensuring consistent coverage.
 
 ---
 
-# 4. Output Encoding Enforcement
+# 5. Output Encoding Enforcement
 
-## 4.1 Vulnerable Pattern
+## 5.1 Vulnerable Pattern
 
 ```jsp
 ${chatContent}
@@ -69,7 +104,7 @@ allowing stored script execution.
 
 ---
 
-## 4.2 Implemented Control
+## 5.2 Implemented Control
 
 ```jsp
 <c:out value="${chatContent}" />
@@ -83,7 +118,7 @@ Security effect:
 
 ---
 
-## 4.3 Validation
+## 5.3 Validation
 
 ### Test Payload
 
@@ -101,9 +136,9 @@ Stored XSS vector neutralized.
 
 ---
 
-# 5. CSRF Enforcement Architecture
+# 6. CSRF Enforcement Architecture
 
-## 5.1 Core Design
+## 6.1 Core Design
 
 CSRF protection implemented via:
 
@@ -115,7 +150,7 @@ CSRF protection implemented via:
 
 ---
 
-## 5.2 Enforcement Scope
+## 6.2 Enforcement Scope
 
 Validated HTTP Methods:
 
@@ -132,7 +167,7 @@ This preserves HTTP semantic correctness.
 
 ---
 
-# 6. CSRF Token Model
+# 7. CSRF Token Model
 
 | Property | Value |
 |-----------|--------|
@@ -147,9 +182,9 @@ Token is strictly session-bound.
 
 ---
 
-# 7. CSRF Filter Implementation
+# 8. CSRF Filter Implementation
 
-## 7.1 Core Validation Logic
+## 8.1 Core Validation Logic
 
 ```java
 private String validateToken(String sessionToken, String requestToken) {
@@ -162,7 +197,7 @@ private String validateToken(String sessionToken, String requestToken) {
 
 ---
 
-## 7.2 Risk Scoring Model (Implemented)
+## 8.2 Risk Scoring Model (Implemented)
 
 Risk score increases per failed validation:
 
@@ -186,7 +221,7 @@ If `riskScore >= 50`:
 
 ---
 
-## 7.3 Structured Security Logging
+## 8.3 Structured Security Logging
 
 Example log:
 
@@ -214,9 +249,9 @@ Logs are written into Catalina logs and ingested by Wazuh Agent.
 
 ---
 
-# 8. Wazuh Integration
+# 9. Wazuh Integration
 
-## 8.1 Custom Decoder
+## 9.1 Custom Decoder
 
 ```xml
 <decoder name="csrf-block">
@@ -226,7 +261,7 @@ Logs are written into Catalina logs and ingested by Wazuh Agent.
 <decoder name="csrf-block-fields">
     <parent>csrf-block</parent>
     <regex offset="after_parent">
-        ip=([^ ]+) user=([^ ]+) session=([^ ]+) method=([^ ]+) uri="([^"]+)" reason=([^ ]+) csrf_fail_count=(\d+) csrf_risk_socre=(\d+) csrf_risk_level=([^ ]+) referer="([^"]*)"
+        ip=([^ ]+) user=([^ ]+) sid=([^ ]+) method=([^ ]+) uri="([^"]+)" reason=([^ ]+) csrf_fail_count=(\d+) csrf_risk_score=(\d+) csrf_risk_level=([^ ]+) referer="([^"]*)"
     </regex>
     <order>
         user, sid, method, uri, reason, 
@@ -240,7 +275,7 @@ for rule-level severity escalation.
 
 ---
 
-## 8.2 Rule Escalation Hierarchy
+## 9.2 Rule Escalation Hierarchy
 
 ```xml
 <group name="tomcat,csrf,web_attack,">
@@ -272,7 +307,7 @@ while enabling risk-based alert severity.
 
 ---
 
-# 9. SameSite Cookie Consideration
+# 10. SameSite Cookie Consideration
 
 SameSite cookie enforcement was evaluated during the hardening phase.
 
@@ -291,7 +326,7 @@ Environment upgrade is required for browser-level SameSite support.
 
 ---
 
-# 10. Security Impact
+# 11. Security Impact
 
 | Capability | Before | After |
 |-------------|---------|--------|
@@ -303,7 +338,7 @@ Environment upgrade is required for browser-level SameSite support.
 
 ---
 
-# 11. Architectural Advancement
+# 12. Architectural Advancement
 
 System evolution:
 
@@ -318,17 +353,118 @@ To:
 
 ---
 
-# 12. Known Limitations
+# 13. Deployment Context, Limitations & Security Roadmap
 
-- No CSP policy enforcement
-- No WAF integration
-- No Active Response automation
-- Static risk scoring (non-adaptive)
-- SameSite unsupported due to Tomcat version
+## 13.1 Deployment Context
+
+This project was implemented and executed within a controlled local laboratory environment using Apache Tomcat 8.0.30.
+
+The purpose of this deployment model was to simulate production-grade security architecture decisions without relying on external infrastructure components such as reverse proxies, WAFs, or managed cloud security services.
+
+Although deployed locally, all security controls were designed under real-world threat assumptions, including:
+
+- Untrusted client input
+- Session hijacking attempts
+- Cross-site request forgery
+- Stored script execution vectors
+- Abuse pattern accumulation
+
+Architectural decisions reflect production-oriented boundary enforcement principles rather than development-only safeguards.
 
 ---
 
-# 13. Conclusion
+## 13.2 Current Limitations
+
+The current implementation intentionally excludes several advanced browser-level and infrastructure-level controls due to environment constraints.
+
+Identified limitations:
+
+- No Content Security Policy (CSP) enforcement
+- No SameSite cookie attribute support (Tomcat 8.0.30 limitation)
+- No Web Application Firewall (WAF) integration
+- No automated Active Response execution
+- Static (non-adaptive) risk scoring model
+- No anomaly-based behavioral baseline per user/IP
+
+These limitations do not invalidate the integrity model but define the boundary of the current phase.
+
+---
+
+## 13.3 Phase 2 Security Hardening Roadmap
+
+The architecture is intentionally designed to evolve toward stricter client-side and infrastructure-integrated enforcement.
+
+Planned improvements:
+
+### 1. Content Security Policy (CSP) Enforcement
+
+- Initial deployment in `Content-Security-Policy-Report-Only` mode
+- Collection of violation telemetry
+- Transition to enforced mode with:
+
+  default-src 'self';
+  script-src 'self';
+  object-src 'none';
+  base-uri 'self';
+  frame-ancestors 'none';
+
+- Future extension to nonce-based strict CSP for inline script control
+
+CSP will function as a browser-level execution control layer, providing defense-in-depth against residual or future XSS vectors.
+
+---
+
+### 2. SameSite Cookie Enforcement
+
+Upon environment upgrade:
+
+- Migration to Tomcat version supporting SameSite configuration
+- Enforce SameSite=Lax or Strict depending on endpoint classification
+- Evaluate reverse proxy header rewriting if required
+
+---
+
+### 3. Adaptive Risk Scoring Model
+
+Enhancements:
+
+- Sliding time window analysis
+- Per-session anomaly baseline
+- IP reputation weighting
+- Progressive penalty escalation
+- Risk decay mechanism
+
+This transforms the current static model into a behavior-aware anomaly detection mechanism.
+
+---
+
+### 4. Active Response Automation
+
+Planned integration:
+
+- Wazuh Active Response scripting
+- Temporary IP blocking for high-risk threshold breach
+- Session quarantine mode
+- Alert enrichment for SOC workflows
+
+---
+
+## 13.4 Architectural Intent
+
+The system is intentionally structured to:
+
+- Enforce validation at trust boundaries
+- Separate detection from enforcement
+- Produce structured telemetry for SIEM ingestion
+- Support progressive security maturation
+
+The current phase establishes integrity and observability foundations.
+
+Future phases extend enforcement depth and automation without redesigning the core trust model.
+
+---
+
+# 14. Conclusion
 
 LD-02 establishes:
 
