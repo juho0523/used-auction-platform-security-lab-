@@ -1,4 +1,4 @@
-# LD-02  
+# LD-02-Malicious-Script
 ## Request Integrity Hardening & CSRF Behavioral Detection Architecture
 
 ---
