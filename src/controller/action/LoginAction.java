@@ -147,6 +147,16 @@ public class LoginAction implements Action {
             " suspicious_pattern=" + suspicious +
             " reason=INVALID_CREDENTIAL"
         );
+
+        if ("HIGH".equals(authLevel)) {
+            try {
+                // 2초간 스레드 점유 (공격 속도 저하)
+                Thread.sleep(2000); 
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }
+        
     }
 
     private void clearFailCount(String ip) {
