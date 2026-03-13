@@ -84,6 +84,31 @@ Detection signals generated at the SIEM layer are consumed by an **external auto
 
 ---
 
+### Architecture Layers
+
+The automated containment system is composed of three logical layers:
+
+| Layer | Role |
+|---|---|
+| Application Layer | Generates authentication telemetry |
+| SIEM Layer | Performs log parsing, correlation, and alert generation |
+| Response Layer | Executes automated containment actions |
+
+Application Layer
+- Apache Tomcat authentication endpoint
+- Security-aware application logging
+
+SIEM Layer
+- Wazuh Agent log collection
+- Wazuh Manager decoders
+- Detection rules
+
+Response Layer
+- PowerShell monitoring script
+- Windows Defender Firewall enforcement
+
+---
+
 # 5. Detection Rules
 
 Brute-force detection is performed by **Rule ID 100102**.
@@ -169,9 +194,7 @@ Firewall Block Execution
 │
 ▼
 Windows Firewall Rule Created
-```
-
- 
+``` 
 This architecture provides a transparent and easily extensible automated response pipeline.
 
 ---
@@ -239,9 +262,15 @@ Example content:
 172.30.1.59
 172.30.1.62
 ```
+This file acts as a lightweight state store for the automated response system.
 
+It ensures that the containment action is executed only once per attacker IP address.
 
-This file stores previously blocked IP addresses to prevent duplicate firewall rules from being created by the automated response script.
+This design prevents:
+
+- duplicate firewall rules
+- unnecessary repeated containment actions
+- excessive firewall rule creation
 
 ---
 
@@ -329,7 +358,7 @@ The system converts **security detection signals into automated defensive action
 | Tactic | Technique | ID |
 |---|---|---|
 | Credential Access | Brute Force | T1110 |
-| Initial Access | Exploit Public-Facing Application | T1190 |
+| Defense Evasion | Valid Accounts (Potential outcome) | T1078 |
 
 The automated containment mechanism mitigates credential-access attacks before successful account compromise.
 
@@ -398,3 +427,4 @@ By integrating:
 the system evolves from passive monitoring to **active defensive response**.
 
 This implementation demonstrates how lightweight automation can significantly enhance incident response capabilities while remaining compatible with legacy application environments.
+
