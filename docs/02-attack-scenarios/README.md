@@ -1,227 +1,169 @@
 # 02 — Attack Scenarios
 
-## Overview
+## 1. Overview
 
-This document defines realistic attack scenarios against a restored legacy Java-based web application.
+This section documents controlled security testing scenarios conducted against the legacy Java web application environment introduced in `01-environment-setup`.
 
-Rather than approaching security from a development or vulnerability-scanning perspective, this phase focuses on **attacker behavior, attack paths, and operational impact**, aligned with SOC and CERT responsibilities.
+The purpose of these scenarios is not to demonstrate successful exploitation, but to evaluate the security posture, monitoring visibility, and incident detection readiness of the application under realistic attack conditions.
 
-The scenarios described here serve as the foundation for later detection, logging, and incident response analysis.
+Each scenario examines how the system behaves when exposed to malicious input and whether existing logging and monitoring mechanisms provide sufficient visibility for Security Operations Center (SOC) analysis.
 
----
-
-## Objectives
-
-The objectives of this phase are to:
-
-- Identify realistic attack vectors applicable to legacy JSP/Servlet-based systems
-- Understand how attackers interact with application-layer weaknesses
-- Define observable attacker behavior suitable for SOC monitoring
-- Establish a structured basis for incident response scenarios
+The findings from these scenarios directly inform the improvements implemented in ```03-logging-and-detection/```.
 
 ---
 
-## Scope and Assumptions
+## 2. Security Assessment Objectives
 
-### Scope
+The attack scenarios were designed to evaluate the following areas:
 
-- **Target System**: Legacy Java Web Application
-- **Web Technology**: JSP / Servlet
-- **Application Server**: Apache Tomcat 8.0.30
-- **Database**: Oracle Database XE (Docker-based)
-- **Attack Layer**: Application and configuration level
+| Objective | Description |
+|---|---|
+| Input Handling | Determine whether malicious input can reach sensitive execution paths |
+| Secure Coding Validation | Verify effectiveness of defensive coding practices |
+| Detection Visibility | Assess whether attacks can be identified through available logs |
+| Monitoring Adequacy | Evaluate whether existing logs provide sufficient forensic context |
+| SOC Readiness | Determine whether attacks can be distinguished from normal user behavior |
 
-### Assumptions
-
-- Attackers do not have access to source code
-- No prior system or container compromise exists
-- Attacks originate from unauthenticated or low-privileged users
-- The system reflects a realistic legacy enterprise environment
+The focus of this phase is security observability, not only exploitability.
 
 ---
 
-## Threat Model
+## 3. Attack Scenario Catalogue
 
-### Attacker Profiles
+The following scenarios were executed in a controlled laboratory environment.
 
-| Attacker Type | Description |
-|--------------|-------------|
-| External Attacker | Unauthenticated user probing exposed endpoints |
-| Authenticated User | Legitimate user abusing logic or authorization flaws |
-| Automated Actor | Bots performing scanning, brute-force, or enumeration |
+### AS-01 — SQL Injection Attempt and Detection Gap Analysis
 
-### Target Assets
+Directory:```AS-01-SQL-Injection-Detection/```
 
-- User authentication credentials
-- Session identifiers
-- Auction and transaction data
-- User-generated content
-- Database availability and integrity
 
----
+Description:
 
-## Attack Surface Overview
+Evaluation of SQL Injection attack attempts against the authentication endpoint.
 
-The following architectural characteristics define the primary attack surface:
+Key observations:
 
-- Parameter-based command routing
-- Inconsistent authorization enforcement
-- Direct JDBC usage without abstraction layers
-- JSP-based dynamic content rendering
-- Legacy configuration and dependency management
+- Parameterized queries prevented exploitation.
+- Authentication bypass was not possible.
+- Existing logs lacked sufficient detail to identify SQL Injection attempts.
 
-These characteristics are commonly observed in still-operational legacy Java web systems.
+Primary focus:
+
+- Detection gap analysis
+- Logging adequacy assessment
+- SOC visibility limitations
+
+Documentation:```AS-01-SQL-Injection-Detection/README.md```
 
 ---
 
-## Attack Scenarios
+### AS-02 — Malicious Script Execution and Request Integrity Compromise Assessment
 
-### Scenario 1 — Broken Access Control via Command Parameter Manipulation
+Directory:```AS-02-Malicious-Script-Execution-Impact-Analysis/```
 
-**Description**
 
-Application behavior is controlled through request parameters (e.g., `cmd`).  
-Inconsistent authorization checks may allow attackers to directly invoke restricted functions.
+Description:
 
-**Attack Flow**
+Assessment of client-side malicious script execution resulting from missing output encoding in JSP rendering.
 
-1. Attacker crafts or intercepts HTTP requests
-2. Command parameters are modified
-3. Valid but undocumented commands are discovered
-4. Restricted functionality is accessed
+Key observations:
 
-**Potential Impact**
+- User-controlled content can execute JavaScript within the trusted origin.
+- Script execution enables authenticated request automation.
+- Browser-origin trust assumptions are weakened.
 
-- Unauthorized access
-- Privilege escalation
-- Business logic abuse
+Primary focus:
 
----
+- Request integrity analysis
+- browser trust boundary evaluation
+- monitoring and detection limitations
 
-### Scenario 2 — SQL Injection in Authentication and Data Queries
+Documentation:```AS-02-Malicious-Script-Execution-Impact-Analysis/README.md```
 
-**Description**
-
-User input is directly incorporated into SQL queries via JDBC without sufficient validation or parameterization.
-
-**Attack Flow**
-
-1. Injection payloads are submitted through login or input fields
-2. Application responses indicate abnormal behavior
-3. Authentication bypass or data extraction occurs
-
-**Potential Impact**
-
-- Credential disclosure
-- Sensitive data leakage
-- Database integrity compromise
 
 ---
 
-### Scenario 3 — Session Hijacking or Session Fixation
+## 4. Environment Context
 
-**Description**
+All scenarios were executed within a controlled local environment.
 
-Weak session management may allow attackers to reuse, predict, or fix session identifiers.
+| Component | Description |
+|---|---|
+| Application | Legacy JSP / Servlet web application |
+| Application Server | Apache Tomcat 8.0.30 |
+| Database | Oracle XE (Docker) |
+| Architecture | Front Controller (Action-based routing) |
+| Logging | Tomcat access logs and application logs |
+| Security Telemetry | Minimal |
 
-**Attack Flow**
-
-1. Attacker obtains a valid session identifier
-2. Session is reused from another context
-3. Actions are executed as a legitimate user
-
-**Potential Impact**
-
-- Account takeover
-- Unauthorized transactions
-- Audit trail corruption
+The environment intentionally reflects characteristics commonly found in legacy enterprise web systems.
 
 ---
 
-### Scenario 4 — Stored Cross-Site Scripting (XSS)
+## 5. Key Observations
 
-**Description**
+The attack scenario analysis revealed several systemic issues.
 
-User-generated content is stored and rendered without proper output encoding.
+| Area | Observation |
+|---|---|
+| Secure Coding | Some defensive controls exist (e.g., parameterized queries) |
+| Monitoring | Logs lack sufficient security context |
+| Detection | Attack classification is not possible using existing telemetry |
+| Observability | Security-relevant events are not centrally aggregated |
 
-**Attack Flow**
-
-1. Malicious script is injected into stored content
-2. Victims access the affected page
-3. Script executes in the victim’s browser
-
-**Potential Impact**
-
-- Session theft
-- Credential harvesting
-- Lateral user compromise
+Even when exploitation is prevented, the absence of structured security logging significantly reduces detection capability.
 
 ---
 
-### Scenario 5 — Business Logic Abuse in Auction Workflow
+## 6. MITRE ATT&CK Mapping
 
-**Description**
+The evaluated scenarios correspond to the following adversarial techniques.
 
-Even in the absence of technical vulnerabilities, flawed business logic can be exploited.
+| Scenario | Technique | ATT&CK ID |
+|---|---|---|
+| SQL Injection Attempt | Exploit Public-Facing Application | T1190 |
+| Malicious Script Execution | Cross-Site Scripting | T1059.007 |
 
-**Attack Flow**
-
-1. Bids are submitted outside allowed time windows
-2. Abnormal bid values or repeated submissions occur
-3. Auction outcomes are manipulated
-
-**Potential Impact**
-
-- Financial loss
-- Trust degradation
-- Compliance and reputational damage
+These techniques commonly appear during early phases of web application intrusion attempts.
 
 ---
 
-### Scenario 6 — Database Exposure via Container Misconfiguration
+## 7. Detection and Monitoring Implications
 
-**Description**
+A key finding from these scenarios is that preventive controls alone are insufficient for effective security operations.
 
-Improper Docker port exposure or weak credentials may allow direct database access.
+Even when attacks fail:
 
-**Attack Flow**
+- Malicious activity may still indicate reconnaissance or probing behavior.
+- Early-stage attacks provide valuable threat intelligence signals.
+- Lack of visibility prevents timely detection.
 
-1. Attacker scans exposed service ports
-2. Weak or default credentials are attempted
-3. Database access is obtained without application interaction
+Improving detection capability requires:
 
-**Potential Impact**
-
-- Complete data compromise
-- Service disruption
-
----
-
-## SOC / CERT Perspective
-
-From a SOC or CERT standpoint, these scenarios emphasize:
-
-- Detection over prevention
-- Log-based anomaly identification
-- Attack progression analysis
-- Incident response readiness for legacy systems
+- application-level security logging
+- centralized log aggregation
+- rule-based monitoring
+- behavioral correlation
 
 ---
 
-## Next Steps
+## 8. Transition to Detection Engineering
 
-The attack scenarios defined in this document will be used to:
+Based on the detection gaps identified during the attack scenarios, the next phase of this project introduces:
 
-- Identify required log sources
-- Design detection hypotheses
-- Map behavior to MITRE ATT&CK techniques
-- Develop incident response playbooks
+- structured security logging
+- centralized log collection
+- SIEM-based detection rules
+- attack pattern monitoring
 
-These topics will be addressed in subsequent phases of this portfolio.
+These improvements are implemented in:```03-logging-and-detection/```
 
 ---
 
-## Disclaimer
+## 9. Conclusion
 
-This document is intended solely for defensive security research and portfolio demonstration purposes.  
-All activities are conducted in a controlled local environment.
+The attack scenarios demonstrate that security resilience involves more than preventing exploitation.
+
+Even when secure coding practices successfully block attacks, insufficient monitoring visibility can leave organizations operationally blind to malicious activity.
+
+The findings from this phase highlight the need for stronger security telemetry, centralized monitoring, and detection engineering, which are addressed in the subsequent project phase.
