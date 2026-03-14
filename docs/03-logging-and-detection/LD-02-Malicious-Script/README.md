@@ -86,7 +86,7 @@ Wazuh Agent → Manager
 ↓  
 Custom Decoders → Rules → Alert Escalation  
 
-Security validation is enforced at the **Filter layer**,  
+Security validation is enforced at the Filter layer,  
 not inside business controllers, ensuring consistent coverage.
 
 ---
