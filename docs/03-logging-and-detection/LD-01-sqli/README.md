@@ -4,9 +4,9 @@
 
 ## 1. Purpose
 
-This document describes the implementation of **application-aware security logging**
-and **SIEM-based detection** introduced to address the detection gaps identified in
-**AS-01 (SQL Injection Attempt & Detection Gap Analysis)**.
+This document describes the implementation of application-aware security logging
+and SIEM-based detection introduced to address the detection gaps identified in
+AS-01 (SQL Injection Attempt & Detection Gap Analysis).
 
 Although the tested SQL Injection attempts did not succeed due to secure coding practices,
 the original system lacked sufficient security telemetry to:
@@ -15,7 +15,7 @@ the original system lacked sufficient security telemetry to:
 - Classify authentication abuse
 - Generate actionable SOC alerts
 
-The objective of this phase is **not exploitation**, but **detection maturity**:
+The objective of this phase is not exploitation, but detection maturity:
 to ensure that failed attacks still generate meaningful, actionable signals.
 This implementation is a controlled proof-of-concept (PoC)
 designed to validate application-assisted detection,
@@ -35,7 +35,7 @@ During SQL Injection testing against the authentication endpoint:
 - SIEM-side rule-based detection was not feasible
 
 From a SOC perspective, the system was technically secure,
-but **operationally blind**.
+but operationally blind.
 
 ---
 
@@ -69,7 +69,7 @@ To address these limitations, the following detection capabilities were required
 ```
 
 
-Detection logic is intentionally shifted **closer to the application layer**
+Detection logic is intentionally shifted closer to the application layer
 to reduce ambiguity and avoid reliance on access logs or network-only signals.
 
 ---
@@ -138,7 +138,7 @@ to prevent sensitive data exposure while preserving detection value.
 Authentication behavior is classified directly at the application layer
 using a sliding time window implemented within the authentication controller (`LoginAction`).
 
-The purpose of this logic is to emit **pre-classified security context**
+The purpose of this logic is to emit pre-classified security context
 rather than forcing the SIEM to reconstruct behavioral state from raw logs.
 
 ### 5.1 Classification Criteria
@@ -194,7 +194,7 @@ and ensures consistent field extraction across log rotations.
 
 ### 6.3 Detection Rule
 
-The detection strategy shifts from signature-based matching to **Behavioral Analysis**. By offloading the stateful correlation (e.g., failure frequency) to the application layer, the SIEM rules remain lightweight, deterministic, and highly accurate.
+The detection strategy shifts from signature-based matching to Behavioral Analysis. By offloading the stateful correlation (e.g., failure frequency) to the application layer, the SIEM rules remain lightweight, deterministic, and highly accurate.
 
 ```xml
 <group name="tomcat,authentication,">
@@ -234,12 +234,12 @@ The detection strategy shifts from signature-based matching to **Behavioral Anal
 </group>
 ```
 Strategic Implementation Highlights
-- **Hierarchical Triggering (if_matched_sid)**: Rules 100101 and 100102 are dependent on the parent rule (100100). This hierarchical structure ensures that deep inspection only occurs when an AUTH_FAIL event is first identified, optimizing the Wazuh analysis engine's performance.
-- **Application-Assisted Correlation**: Traditionally, SIEMs calculate brute-force attempts using frequency/time-window functions (e.g., frequency: 5, timeframe: 30). Here, the logic is handled by the application, which passes the auth_level=HIGH flag. This reduces SIEM CPU overhead and eliminates false positives caused by log ingestion delays.
-- **Severity-Based Alerting**:
+- Hierarchical Triggering (if_matched_sid): Rules 100101 and 100102 are dependent on the parent rule (100100). This hierarchical structure ensures that deep inspection only occurs when an AUTH_FAIL event is first identified, optimizing the Wazuh analysis engine's performance.
+- Application-Assisted Correlation: Traditionally, SIEMs calculate brute-force attempts using frequency/time-window functions (e.g., frequency: 5, timeframe: 30). Here, the logic is handled by the application, which passes the auth_level=HIGH flag. This reduces SIEM CPU overhead and eliminates false positives caused by log ingestion delays.
+- Severity-Based Alerting:
   - Level 12 (Critical): SQL Injection attempts are assigned a higher severity because they indicate a direct attempt to exploit application logic vulnerabilities.
   - Level 10 (High): Brute-force attacks represent high-volume credential probing and warrant immediate IP-reputation triaging.
-- **MITRE ATT&CK Alignment**: Each high-severity rule is mapped to specific MITRE techniques (T1059, T1110.001). This allows the SOC team to integrate these alerts into a broader threat hunting framework and correlate them with other lateral movement signals.
+- MITRE ATT&CK Alignment: Each high-severity rule is mapped to specific MITRE techniques (T1059, T1110.001). This allows the SOC team to integrate these alerts into a broader threat hunting framework and correlate them with other lateral movement signals.
 
 ## 7. Detection Results
 
@@ -256,7 +256,7 @@ that were previously indistinguishable from normal authentication failures:
 - Early-stage reconnaissance activity targeting authentication endpoints
 
 Detection is no longer dependent on exploit success,
-but on **observable attacker behavior**.
+but on observable attacker behavior.
 
 ---
 
