@@ -186,14 +186,16 @@ These strategies are documented in:```docs/04-automated-incident-containment-str
 
 # Security Lessons Learned
 
-The final phase of the project analyzes architectural and operational lessons derived from the testing process.
+This section summarizes the architectural and operational insights obtained during the security testing and detection engineering process.
 
-Topics include:
+The analysis focuses on several key areas:
 
 - limitations of infrastructure-only logging
-- benefits of application-aware detection
-- security telemetry design
+- advantages of application-aware detection
+- security telemetry design principles
 - detection engineering trade-offs
+
+These lessons highlight how security visibility can be significantly improved by integrating application-level telemetry with SIEM-based monitoring.
 
 Documentation is available in:```docs/05-lessons-learned```
 
